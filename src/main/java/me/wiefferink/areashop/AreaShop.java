@@ -11,7 +11,6 @@ import me.wiefferink.areashop.managers.FeatureManager;
 import me.wiefferink.areashop.managers.FileManager;
 import me.wiefferink.areashop.managers.Manager;
 import me.wiefferink.areashop.managers.SignLinkerManager;
-import me.wiefferink.areashop.tools.GithubUpdateCheck;
 import me.wiefferink.areashop.tools.Utils;
 import me.wiefferink.bukkitdo.Do;
 import me.wiefferink.interactivemessenger.processing.Message;
@@ -24,7 +23,6 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -55,7 +53,6 @@ public final class AreaShop extends JavaPlugin {
 	private boolean debug = false;
 	private List<String> chatprefix = null;
 	private boolean ready = false;
-	private GithubUpdateCheck githubUpdateCheck = null;
 
 	// Folders and file names
 	public static final String languageFolder = "lang";
@@ -177,59 +174,7 @@ public final class AreaShop extends JavaPlugin {
 
 			// Register dynamic permission (things declared in config)
 			registerDynamicPermissions();
-
-			// Don't initialize the updatechecker if disabled in the config
-			if(getConfig().getBoolean("checkForUpdates")) {
-				githubUpdateCheck = new GithubUpdateCheck(
-						AreaShop.getInstance(),
-						"NLThijs48",
-						"AreaShop"
-				).withVersionComparator((latestVersion, currentVersion) ->
-						!cleanVersion(latestVersion).equals(cleanVersion(currentVersion))
-				).checkUpdate(result -> {
-					AreaShop.debug("Update check result:", result);
-					if(!result.hasUpdate()) {
-						return;
-					}
-
-					AreaShop.info("Update from AreaShop V" + cleanVersion(result.getCurrentVersion()) + " to AreaShop V" + cleanVersion(result.getLatestVersion()) + " available, get the latest version at https://www.spigotmc.org/resources/areashop.2991/");
-					for(Player player : Utils.getOnlinePlayers()) {
-						notifyUpdate(player);
-					}
-				});
-			}
 		}
-	}
-
-	/**
-	 * Notify a player about an update if he wants notifications about it and an update is available.
-	 * @param sender CommandSender to notify
-	 */
-	public void notifyUpdate(CommandSender sender) {
-		if(githubUpdateCheck != null && githubUpdateCheck.hasUpdate() && sender.hasPermission("areashop.notifyupdate")) {
-			AreaShop.getInstance().message(sender, "update-playerNotify", cleanVersion(githubUpdateCheck.getCurrentVersion()), cleanVersion(githubUpdateCheck.getLatestVersion()));
-		}
-	}
-
-	/**
-	 * Cleanup a version number.
-	 * @param version Version to clean
-	 * @return Cleaned up version (removed prefixes and suffixes)
-	 */
-	private String cleanVersion(String version) {
-		version = version.toLowerCase();
-
-		// Strip 'v' as used on Github tags
-		if(version.startsWith("v")) {
-			version = version.substring(1);
-		}
-
-		// Strip build number as used by Jenkins
-		if(version.contains("#")) {
-			version = version.substring(0, version.indexOf("#"));
-		}
-
-		return version;
 	}
 
 	/**

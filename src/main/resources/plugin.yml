@@ -55,7 +55,6 @@ permissions:
       areashop.stopresellall: true
       areashop.addfriendall: true
       areashop.delfriendall: true
-      areashop.notifyupdate: true
       areashop.stack: true
       areashop.setlandlord: true
       areashop.linksigns: true
@@ -252,9 +251,6 @@ permissions:
     default: true
   areashop.delfriendall:
     description: Allows you to delete friends from all regions
-    default: op
-  areashop.notifyupdate:
-    description: Will notify this player when an update is available
     default: op
   areashop.linksigns:
     description: Allows you to enter sign linking mode
