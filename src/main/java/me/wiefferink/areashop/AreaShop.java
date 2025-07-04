@@ -27,6 +27,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.List;
@@ -327,7 +328,7 @@ public final class AreaShop extends JavaPlugin {
 	 */
 	public Economy getEconomy() {
 		RegisteredServiceProvider<Economy> economy = getServer().getServicesManager().getRegistration(net.milkbowl.vault.economy.Economy.class);
-		if(economy == null || economy.getProvider() == null) {
+		if(economy == null) {
 			error("There is no economy provider to support Vault, make sure you installed an economy plugin");
 			return null;
 		}
@@ -340,7 +341,7 @@ public final class AreaShop extends JavaPlugin {
 	 */
 	public net.milkbowl.vault.permission.Permission getPermissionProvider() {
 		RegisteredServiceProvider<net.milkbowl.vault.permission.Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-		if (permissionProvider == null || permissionProvider.getProvider() == null) {
+		if (permissionProvider == null) {
 			return null;
 		}
 		return permissionProvider.getProvider();
@@ -503,7 +504,7 @@ public final class AreaShop extends JavaPlugin {
 	 * Return the config.
 	 */
 	@Override
-	public YamlConfiguration getConfig() {
+	public @NotNull YamlConfiguration getConfig() {
 		return fileManager.getConfig();
 	}
 

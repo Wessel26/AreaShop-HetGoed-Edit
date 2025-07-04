@@ -9,9 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class DelsignCommand extends CommandAreaShop {
 
 	@Override
@@ -33,11 +30,10 @@ public class DelsignCommand extends CommandAreaShop {
 			plugin.message(sender, "delsign-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
-		Player player = (Player)sender;
 
 		// Get the sign
 		Block block = null;
@@ -60,12 +56,6 @@ public class DelsignCommand extends CommandAreaShop {
 		plugin.message(sender, "delsign-success", regionSign.getRegion());
 		regionSign.remove();
 	}
-
-	@Override
-	public List<String> getTabCompleteList(int toComplete, String[] start, CommandSender sender) {
-		return new ArrayList<>();
-	}
-
 }
 
 

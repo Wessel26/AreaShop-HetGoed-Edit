@@ -33,7 +33,7 @@ public class FindCommand extends CommandAreaShop {
 			plugin.message(sender, "find-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
@@ -41,7 +41,6 @@ public class FindCommand extends CommandAreaShop {
 			plugin.message(sender, "find-help");
 			return;
 		}
-		Player player = (Player)sender;
 		double balance = 0.0;
 		if(plugin.getEconomy() != null) {
 			balance = plugin.getEconomy().getBalance(player);

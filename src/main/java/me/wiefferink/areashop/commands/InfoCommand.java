@@ -230,205 +230,201 @@ public class InfoCommand extends CommandAreaShop {
 
 			// Region info
 			else if(args[1].equalsIgnoreCase("region")) {
-				if(args.length > 1) {
-					RentRegion rent = null;
-					BuyRegion buy = null;
-					if(args.length > 2) {
-						rent = plugin.getFileManager().getRent(args[2]);
-						buy = plugin.getFileManager().getBuy(args[2]);
-					} else {
-						if(sender instanceof Player) {
-							// get the region by location
-							List<GeneralRegion> regions = Utils.getImportantRegions(((Player)sender).getLocation());
-							if(regions.isEmpty()) {
-								plugin.message(sender, "cmd-noRegionsAtLocation");
-								return;
-							} else if(regions.size() > 1) {
-								plugin.message(sender, "cmd-moreRegionsAtLocation");
-								return;
-							} else {
-								if(regions.get(0) instanceof RentRegion) {
-									rent = (RentRegion)regions.get(0);
-								} else if(regions.get(0) instanceof BuyRegion) {
-									buy = (BuyRegion)regions.get(0);
-								}
-							}
-						} else {
-							plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");
+				RentRegion rent = null;
+				BuyRegion buy = null;
+				if(args.length > 2) {
+					rent = plugin.getFileManager().getRent(args[2]);
+					buy = plugin.getFileManager().getBuy(args[2]);
+				} else {
+					if(sender instanceof Player) {
+						// get the region by location
+						List<GeneralRegion> regions = Utils.getImportantRegions(((Player)sender).getLocation());
+						if(regions.isEmpty()) {
+							plugin.message(sender, "cmd-noRegionsAtLocation");
 							return;
+						} else if(regions.size() > 1) {
+							plugin.message(sender, "cmd-moreRegionsAtLocation");
+							return;
+						} else {
+							if(regions.getFirst() instanceof RentRegion) {
+								rent = (RentRegion)regions.getFirst();
+							} else if(regions.getFirst() instanceof BuyRegion) {
+								buy = (BuyRegion)regions.getFirst();
+							}
 						}
-					}
-
-					if(rent == null && buy == null) {
-						plugin.message(sender, "info-regionNotExisting", args[2]);
+					} else {
+						plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");
 						return;
 					}
+				}
 
-					if(rent != null) {
-						plugin.message(sender, "info-regionHeaderRent", rent);
-						if(rent.isRented()) {
-							plugin.messageNoPrefix(sender, "info-regionRented", rent);
-							plugin.messageNoPrefix(sender, "info-regionExtending", rent);
-							// Money back
-							if(UnrentCommand.canUse(sender, rent)) {
-								plugin.messageNoPrefix(sender, "info-regionMoneyBackRentClick", rent);
-							} else {
-								plugin.messageNoPrefix(sender, "info-regionMoneyBackRent", rent);
-							}
-							// Friends
-							if(!rent.getFriendsFeature().getFriendNames().isEmpty()) {
-								String messagePart = "info-friend";
-								if(DelfriendCommand.canUse(sender, rent)) {
-									messagePart = "info-friendRemove";
-								}
-								plugin.messageNoPrefix(sender, "info-regionFriends", rent, Utils.combinedMessage(rent.getFriendsFeature().getFriendNames(), messagePart));
-							}
+				if(rent == null && buy == null) {
+					plugin.message(sender, "info-regionNotExisting", args[2]);
+					return;
+				}
+
+				if(rent != null) {
+					plugin.message(sender, "info-regionHeaderRent", rent);
+					if(rent.isRented()) {
+						plugin.messageNoPrefix(sender, "info-regionRented", rent);
+						plugin.messageNoPrefix(sender, "info-regionExtending", rent);
+						// Money back
+						if(UnrentCommand.canUse(sender, rent)) {
+							plugin.messageNoPrefix(sender, "info-regionMoneyBackRentClick", rent);
 						} else {
-							plugin.messageNoPrefix(sender, "info-regionCanBeRented", rent);
+							plugin.messageNoPrefix(sender, "info-regionMoneyBackRent", rent);
 						}
-						if(rent.getLandlordName() != null) {
-							plugin.messageNoPrefix(sender, "info-regionLandlord", rent);
-						}
-						// Maximum extends
-						if(rent.getMaxExtends() != -1) {
-							if(rent.getMaxExtends() == 0) {
-								plugin.messageNoPrefix(sender, "info-regionNoExtending", rent);
-							} else if(rent.isRented()) {
-								plugin.messageNoPrefix(sender, "info-regionExtendsLeft", rent);
-							} else {
-								plugin.messageNoPrefix(sender, "info-regionMaxExtends", rent);
+						// Friends
+						if(!rent.getFriendsFeature().getFriendNames().isEmpty()) {
+							String messagePart = "info-friend";
+							if(DelfriendCommand.canUse(sender, rent)) {
+								messagePart = "info-friendRemove";
 							}
+							plugin.messageNoPrefix(sender, "info-regionFriends", rent, Utils.combinedMessage(rent.getFriendsFeature().getFriendNames(), messagePart));
 						}
-						// If maxExtends is zero it does not make sense to show this message
-						if(rent.getMaxRentTime() != -1 && rent.getMaxExtends() != 0) {
-							plugin.messageNoPrefix(sender, "info-regionMaxRentTime", rent);
-						}
-						if(rent.getInactiveTimeUntilUnrent() != -1) {
-							plugin.messageNoPrefix(sender, "info-regionInactiveUnrent", rent);
-						}
-						// Teleport
-						Message tp = Message.fromKey("info-prefix");
-						boolean foundSomething = false;
-						if(TeleportCommand.canUse(sender, rent)) {
-							foundSomething = true;
-							tp.append(Message.fromKey("info-regionTeleport").replacements(rent));
-						}
-						if(SetteleportCommand.canUse(sender, rent)) {
-							if(foundSomething) {
-								tp.append(", ");
-							}
-							foundSomething = true;
-							tp.append(Message.fromKey("info-setRegionTeleport").replacements(rent));
-						}
-						if(foundSomething) {
-							tp.append(".");
-							tp.send(sender);
-						}
-						// Signs
-						List<String> signLocations = new ArrayList<>();
-						for(Location location : rent.getSignsFeature().getSignLocations()) {
-							signLocations.add(Message.fromKey("info-regionSignLocation").replacements(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).getPlain());
-						}
-						if(!signLocations.isEmpty()) {
-							plugin.messageNoPrefix(sender, "info-regionSigns", Utils.createCommaSeparatedList(signLocations));
-						}
-						// Groups
-						if(sender.hasPermission("areashop.groupinfo") && !rent.getGroupNames().isEmpty()) {
-							plugin.messageNoPrefix(sender, "info-regionGroups", Utils.createCommaSeparatedList(rent.getGroupNames()));
-						}
-						// Restoring
-						if(rent.isRestoreEnabled()) {
-							plugin.messageNoPrefix(sender, "info-regionRestoringRent", rent);
-						}
-						// Restrictions
-						if(!rent.isRented()) {
-							if(rent.restrictedToRegion()) {
-								plugin.messageNoPrefix(sender, "info-regionRestrictedRegionRent", rent);
-							} else if(rent.restrictedToWorld()) {
-								plugin.messageNoPrefix(sender, "info-regionRestrictedWorldRent", rent);
-							}
-						}
-						plugin.messageNoPrefix(sender, "info-regionFooterRent", rent);
-					} else if(buy != null) {
-						plugin.message(sender, "info-regionHeaderBuy", buy);
-						if(buy.isSold()) {
-							if(buy.isInResellingMode()) {
-								plugin.messageNoPrefix(sender, "info-regionReselling", buy);
-								plugin.messageNoPrefix(sender, "info-regionReselPrice", buy);
-							} else {
-								plugin.messageNoPrefix(sender, "info-regionBought", buy);
-							}
-							// Money back
-							if(!buy.getBooleanSetting("buy.sellDisabled")) {
-								if (SellCommand.canUse(sender, buy)) {
-									plugin.messageNoPrefix(sender, "info-regionMoneyBackBuyClick", buy);
-								} else {
-									plugin.messageNoPrefix(sender, "info-regionMoneyBackBuy", buy);
-								}
-							}
-							// Friends
-							if(!buy.getFriendsFeature().getFriendNames().isEmpty()) {
-								String messagePart = "info-friend";
-								if(DelfriendCommand.canUse(sender, buy)) {
-									messagePart = "info-friendRemove";
-								}
-								plugin.messageNoPrefix(sender, "info-regionFriends", buy, Utils.combinedMessage(buy.getFriendsFeature().getFriendNames(), messagePart));
-							}
-						} else {
-							plugin.messageNoPrefix(sender, "info-regionCanBeBought", buy);
-						}
-						if(buy.getLandlord() != null) {
-							plugin.messageNoPrefix(sender, "info-regionLandlord", buy);
-						}
-						if(buy.getInactiveTimeUntilSell() != -1) {
-							plugin.messageNoPrefix(sender, "info-regionInactiveSell", buy);
-						}
-						// Teleport
-						Message tp = Message.fromKey("info-prefix");
-						boolean foundSomething = false;
-						if(TeleportCommand.canUse(sender, buy)) {
-							foundSomething = true;
-							tp.append(Message.fromKey("info-regionTeleport").replacements(buy));
-						}
-						if(SetteleportCommand.canUse(sender, buy)) {
-							if(foundSomething) {
-								tp.append(", ");
-							}
-							foundSomething = true;
-							tp.append(Message.fromKey("info-setRegionTeleport").replacements(buy));
-						}
-						if(foundSomething) {
-							tp.append(".");
-							tp.send(sender);
-						}
-						// Signs
-						List<String> signLocations = new ArrayList<>();
-						for(Location location : buy.getSignsFeature().getSignLocations()) {
-							signLocations.add(Message.fromKey("info-regionSignLocation").replacements(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).getPlain());
-						}
-						if(!signLocations.isEmpty()) {
-							plugin.messageNoPrefix(sender, "info-regionSigns", Utils.createCommaSeparatedList(signLocations));
-						}
-						// Groups
-						if(sender.hasPermission("areashop.groupinfo") && !buy.getGroupNames().isEmpty()) {
-							plugin.messageNoPrefix(sender, "info-regionGroups", Utils.createCommaSeparatedList(buy.getGroupNames()));
-						}
-						// Restoring
-						if(buy.isRestoreEnabled()) {
-							plugin.messageNoPrefix(sender, "info-regionRestoringBuy", buy);
-						}
-						// Restrictions
-						if(!buy.isSold()) {
-							if(buy.restrictedToRegion()) {
-								plugin.messageNoPrefix(sender, "info-regionRestrictedRegionBuy", buy);
-							} else if(buy.restrictedToWorld()) {
-								plugin.messageNoPrefix(sender, "info-regionRestrictedWorldBuy", buy);
-							}
-						}
-						plugin.messageNoPrefix(sender, "info-regionFooterBuy", buy);
+					} else {
+						plugin.messageNoPrefix(sender, "info-regionCanBeRented", rent);
 					}
+					if(rent.getLandlordName() != null) {
+						plugin.messageNoPrefix(sender, "info-regionLandlord", rent);
+					}
+					// Maximum extends
+					if(rent.getMaxExtends() != -1) {
+						if(rent.getMaxExtends() == 0) {
+							plugin.messageNoPrefix(sender, "info-regionNoExtending", rent);
+						} else if(rent.isRented()) {
+							plugin.messageNoPrefix(sender, "info-regionExtendsLeft", rent);
+						} else {
+							plugin.messageNoPrefix(sender, "info-regionMaxExtends", rent);
+						}
+					}
+					// If maxExtends is zero it does not make sense to show this message
+					if(rent.getMaxRentTime() != -1 && rent.getMaxExtends() != 0) {
+						plugin.messageNoPrefix(sender, "info-regionMaxRentTime", rent);
+					}
+					if(rent.getInactiveTimeUntilUnrent() != -1) {
+						plugin.messageNoPrefix(sender, "info-regionInactiveUnrent", rent);
+					}
+					// Teleport
+					Message tp = Message.fromKey("info-prefix");
+					boolean foundSomething = false;
+					if(TeleportCommand.canUse(sender, rent)) {
+						foundSomething = true;
+						tp.append(Message.fromKey("info-regionTeleport").replacements(rent));
+					}
+					if(SetteleportCommand.canUse(sender, rent)) {
+						if(foundSomething) {
+							tp.append(", ");
+						}
+						foundSomething = true;
+						tp.append(Message.fromKey("info-setRegionTeleport").replacements(rent));
+					}
+					if(foundSomething) {
+						tp.append(".");
+						tp.send(sender);
+					}
+					// Signs
+					List<String> signLocations = new ArrayList<>();
+					for(Location location : rent.getSignsFeature().getSignLocations()) {
+						signLocations.add(Message.fromKey("info-regionSignLocation").replacements(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).getPlain());
+					}
+					if(!signLocations.isEmpty()) {
+						plugin.messageNoPrefix(sender, "info-regionSigns", Utils.createCommaSeparatedList(signLocations));
+					}
+					// Groups
+					if(sender.hasPermission("areashop.groupinfo") && !rent.getGroupNames().isEmpty()) {
+						plugin.messageNoPrefix(sender, "info-regionGroups", Utils.createCommaSeparatedList(rent.getGroupNames()));
+					}
+					// Restoring
+					if(rent.isRestoreEnabled()) {
+						plugin.messageNoPrefix(sender, "info-regionRestoringRent", rent);
+					}
+					// Restrictions
+					if(!rent.isRented()) {
+						if(rent.restrictedToRegion()) {
+							plugin.messageNoPrefix(sender, "info-regionRestrictedRegionRent", rent);
+						} else if(rent.restrictedToWorld()) {
+							plugin.messageNoPrefix(sender, "info-regionRestrictedWorldRent", rent);
+						}
+					}
+					plugin.messageNoPrefix(sender, "info-regionFooterRent", rent);
 				} else {
-					plugin.message(sender, "info-regionHelp");
+					plugin.message(sender, "info-regionHeaderBuy", buy);
+					if(buy.isSold()) {
+						if(buy.isInResellingMode()) {
+							plugin.messageNoPrefix(sender, "info-regionReselling", buy);
+							plugin.messageNoPrefix(sender, "info-regionReselPrice", buy);
+						} else {
+							plugin.messageNoPrefix(sender, "info-regionBought", buy);
+						}
+						// Money back
+						if(!buy.getBooleanSetting("buy.sellDisabled")) {
+							if (SellCommand.canUse(sender, buy)) {
+								plugin.messageNoPrefix(sender, "info-regionMoneyBackBuyClick", buy);
+							} else {
+								plugin.messageNoPrefix(sender, "info-regionMoneyBackBuy", buy);
+							}
+						}
+						// Friends
+						if(!buy.getFriendsFeature().getFriendNames().isEmpty()) {
+							String messagePart = "info-friend";
+							if(DelfriendCommand.canUse(sender, buy)) {
+								messagePart = "info-friendRemove";
+							}
+							plugin.messageNoPrefix(sender, "info-regionFriends", buy, Utils.combinedMessage(buy.getFriendsFeature().getFriendNames(), messagePart));
+						}
+					} else {
+						plugin.messageNoPrefix(sender, "info-regionCanBeBought", buy);
+					}
+					if(buy.getLandlord() != null) {
+						plugin.messageNoPrefix(sender, "info-regionLandlord", buy);
+					}
+					if(buy.getInactiveTimeUntilSell() != -1) {
+						plugin.messageNoPrefix(sender, "info-regionInactiveSell", buy);
+					}
+					// Teleport
+					Message tp = Message.fromKey("info-prefix");
+					boolean foundSomething = false;
+					if(TeleportCommand.canUse(sender, buy)) {
+						foundSomething = true;
+						tp.append(Message.fromKey("info-regionTeleport").replacements(buy));
+					}
+					if(SetteleportCommand.canUse(sender, buy)) {
+						if(foundSomething) {
+							tp.append(", ");
+						}
+						foundSomething = true;
+						tp.append(Message.fromKey("info-setRegionTeleport").replacements(buy));
+					}
+					if(foundSomething) {
+						tp.append(".");
+						tp.send(sender);
+					}
+					// Signs
+					List<String> signLocations = new ArrayList<>();
+					for(Location location : buy.getSignsFeature().getSignLocations()) {
+						signLocations.add(Message.fromKey("info-regionSignLocation").replacements(location.getWorld().getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ()).getPlain());
+					}
+					if(!signLocations.isEmpty()) {
+						plugin.messageNoPrefix(sender, "info-regionSigns", Utils.createCommaSeparatedList(signLocations));
+					}
+					// Groups
+					if(sender.hasPermission("areashop.groupinfo") && !buy.getGroupNames().isEmpty()) {
+						plugin.messageNoPrefix(sender, "info-regionGroups", Utils.createCommaSeparatedList(buy.getGroupNames()));
+					}
+					// Restoring
+					if(buy.isRestoreEnabled()) {
+						plugin.messageNoPrefix(sender, "info-regionRestoringBuy", buy);
+					}
+					// Restrictions
+					if(!buy.isSold()) {
+						if(buy.restrictedToRegion()) {
+							plugin.messageNoPrefix(sender, "info-regionRestrictedRegionBuy", buy);
+						} else if(buy.restrictedToWorld()) {
+							plugin.messageNoPrefix(sender, "info-regionRestrictedWorldBuy", buy);
+						}
+					}
+					plugin.messageNoPrefix(sender, "info-regionFooterBuy", buy);
 				}
 			} else {
 				plugin.message(sender, "info-help");

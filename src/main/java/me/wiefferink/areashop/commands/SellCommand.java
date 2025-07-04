@@ -34,8 +34,7 @@ public class SellCommand extends CommandAreaShop {
 		if(person.hasPermission("areashop.sell")) {
 			return true;
 		}
-		if(person instanceof Player) {
-			Player player = (Player)person;
+		if(person instanceof Player player) {
 			return region.isOwner(player) && person.hasPermission("areashop.sellown");
 		}
 		return false;
@@ -59,7 +58,7 @@ public class SellCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					buy = regions.get(0);
+					buy = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

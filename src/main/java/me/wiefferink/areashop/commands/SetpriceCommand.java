@@ -47,7 +47,7 @@ public class SetpriceCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					region = regions.get(0);
+					region = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

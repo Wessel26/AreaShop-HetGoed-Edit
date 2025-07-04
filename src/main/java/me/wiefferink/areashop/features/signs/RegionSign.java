@@ -98,7 +98,7 @@ public class RegionSign {
 
 	/**
 	 * Get the material of the sign as saved in the config.
-	 * @return Material of the sign, usually {@link Material#WALL_SIGN}, {@link Material#SIGN}, or one of the other wood types (different result for 1.13-), Material.AIR if none.
+	 * @return Material of the sign or Material.AIR if none.
 	 */
 	public Material getMaterial() {
 		String name = getRegion().getConfig().getString("general.signs." + key + ".signType");
@@ -205,7 +205,7 @@ public class RegionSign {
 		// Check the lines for the timeleft tag
 		for(int i = 1; i <= 4; i++) {
 			String line = stateConfig.getString("line" + i);
-			if(line != null && !line.isEmpty() && line.contains(Message.VARIABLE_START + AreaShop.tagTimeLeft + Message.VARIABLE_END)) {
+			if(line != null && line.contains(Message.VARIABLE_START + AreaShop.tagTimeLeft + Message.VARIABLE_END)) {
 				return true;
 			}
 		}

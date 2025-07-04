@@ -36,7 +36,7 @@ public class CommandsFeature extends RegionFeature {
 			return;
 		}
 		List<String> commands = eventCommandProfileSection.getStringList(event.getValue() + "." + (before ? "before" : "after"));
-		if(commands == null || commands.isEmpty()) {
+		if(commands.isEmpty()) {
 			return;
 		}
 		region.runCommands(Bukkit.getConsoleSender(), commands);

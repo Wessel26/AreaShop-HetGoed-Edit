@@ -42,7 +42,7 @@ public class StopresellCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					buy = regions.get(0);
+					buy = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

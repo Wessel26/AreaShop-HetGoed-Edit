@@ -37,11 +37,10 @@ public class AddsignCommand extends CommandAreaShop {
 			plugin.message(sender, "addsign-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
-		Player player = (Player)sender;
 
 		// Get the sign
 		Block block = null;

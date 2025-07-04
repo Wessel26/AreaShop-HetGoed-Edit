@@ -1,6 +1,5 @@
 package me.wiefferink.areashop.regions;
 
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.protection.regions.ProtectedPolygonalRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -29,8 +28,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
-import java.awt.geom.Area;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -450,11 +449,8 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 		}
 		String landlordName = getStringSetting("general.landlordName");
 		if(landlordName != null && !landlordName.isEmpty()) {
-			@SuppressWarnings("deprecation")
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(landlordName);
-			if(offlinePlayer != null) {
-				return offlinePlayer.getUniqueId();
-			}
+			return offlinePlayer.getUniqueId();
 		}
 		return null;
 	}
@@ -465,7 +461,7 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 	 */
 	public String getLandlordName() {
 		String result = Utils.toName(getLandlord());
-		if(result == null || result.isEmpty()) {
+		if(result.isEmpty()) {
 			result = config.getString("general.landlordName");
 			if(result == null || result.isEmpty()) {
 				result = null;
@@ -484,9 +480,6 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 			setSetting("general.landlord", landlord.toString());
 		}
 		String properName = Utils.toName(landlord);
-		if(properName == null) {
-			properName = name;
-		}
 		setSetting("general.landlordName", properName);
 	}
 
@@ -656,32 +649,20 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 				if(tp == null) {
 					return null;
 				}
-				switch(variable) {
-					case AreaShop.tagTeleportBlockX:
-						return tp.getBlockX();
-					case AreaShop.tagTeleportBlockY:
-						return tp.getBlockY();
-					case AreaShop.tagTeleportBlockZ:
-						return tp.getBlockZ();
-					case AreaShop.tagTeleportX:
-						return tp.getX();
-					case AreaShop.tagTeleportY:
-						return tp.getY();
-					case AreaShop.tagTeleportZ:
-						return tp.getZ();
-					case AreaShop.tagTeleportPitch:
-						return tp.getPitch();
-					case AreaShop.tagTeleportYaw:
-						return tp.getYaw();
-					case AreaShop.tagTeleportPitchRound:
-						return Math.round(tp.getPitch());
-					case AreaShop.tagTeleportYawRound:
-						return Math.round(tp.getYaw());
-					case AreaShop.tagTeleportWorld:
-						return tp.getWorld().getName();
-					default:
-						return null;
-				}
+				return switch (variable) {
+					case AreaShop.tagTeleportBlockX -> tp.getBlockX();
+					case AreaShop.tagTeleportBlockY -> tp.getBlockY();
+					case AreaShop.tagTeleportBlockZ -> tp.getBlockZ();
+					case AreaShop.tagTeleportX -> tp.getX();
+					case AreaShop.tagTeleportY -> tp.getY();
+					case AreaShop.tagTeleportZ -> tp.getZ();
+					case AreaShop.tagTeleportPitch -> tp.getPitch();
+					case AreaShop.tagTeleportYaw -> tp.getYaw();
+					case AreaShop.tagTeleportPitchRound -> Math.round(tp.getPitch());
+					case AreaShop.tagTeleportYawRound -> Math.round(tp.getYaw());
+					case AreaShop.tagTeleportWorld -> tp.getWorld().getName();
+					default -> null;
+				};
 		}
 	}
 
@@ -1217,7 +1198,7 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 		// Check all limitgroups the player has
 		List<String> groups = new ArrayList<>(plugin.getConfig().getConfigurationSection("limitGroups").getKeys(false));
 		while(!groups.isEmpty()) {
-			String group = groups.get(0);
+			String group = groups.getFirst();
 			if(plugin.hasPermission(offlinePlayer, "areashop.limits." + group) && this.matchesLimitGroup(group)) {
 				String pathPrefix = "limitGroups." + group + ".";
 				if(!plugin.getConfig().isInt(pathPrefix + "total")) {
@@ -1296,71 +1277,72 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 	/**
 	 * Class to store the result of a limits check.
 	 */
-	public class LimitResult {
-		private final boolean actionAllowed;
-		private final LimitType limitingFactor;
-		private final int maximum;
-		private final int current;
-		private final String limitingGroup;
-
+	public record LimitResult(boolean actionAllowed, LimitType limitingFactor, int maximum, int current,
+								  String limitingGroup) {
 		/**
 		 * Constructor.
+		 *
 		 * @param actionAllowed  has the action been allowed?
 		 * @param limitingFactor The LimitType that has prevented the action (if actionAllowed is false)
 		 * @param maximum        The maximum number of regions allowed (if actionAllowed is false)
 		 * @param current        The current number of regions the player has (if actionAllowed is false)
 		 * @param limitingGroup  The group that is enforcing this limit (if actionAllowed is false)
 		 */
-		public LimitResult(boolean actionAllowed, LimitType limitingFactor, int maximum, int current, String limitingGroup) {
-			this.actionAllowed = actionAllowed;
-			this.limitingFactor = limitingFactor;
-			this.maximum = maximum;
-			this.current = current;
-			this.limitingGroup = limitingGroup;
+		public LimitResult {
 		}
 
 		/**
 		 * Check if the action is allowed.
+		 *
 		 * @return true if the actions is allowed, otherwise false
 		 */
+		@Override
 		public boolean actionAllowed() {
 			return actionAllowed;
 		}
 
 		/**
 		 * Get the type of the factor that is limiting the action, assuming actionAllowed() is false.
+		 *
 		 * @return The type of the limiting factor
 		 */
-		public LimitType getLimitingFactor() {
+		@Override
+		public LimitType limitingFactor() {
 			return limitingFactor;
 		}
 
 		/**
 		 * Get the maximum number of the group that is the limiting factor, assuming actionAllowed() is false.
+		 *
 		 * @return The maximum
 		 */
-		public int getMaximum() {
+		@Override
+		public int maximum() {
 			return maximum;
 		}
 
 		/**
 		 * Get the current number of regions in the group that is the limiting factor, assuming actionAllowed() is false.
+		 *
 		 * @return The current number of regions the player has
 		 */
-		public int getCurrent() {
+		@Override
+		public int current() {
 			return current;
 		}
 
 		/**
 		 * Get the name of the group that is limiting the action, assuming actionAllowed() is false.
+		 *
 		 * @return The name of the group
 		 */
-		public String getLimitingGroup() {
+		@Override
+		public String limitingGroup() {
 			return limitingGroup;
 		}
 
 		@Override
-		public String toString() {
+		public @NotNull String toString() {
 			return "actionAllowed=" + actionAllowed + ", limitingFactor=" + limitingFactor + ", maximum=" + maximum + ", current=" + current + ", limitingGroup=" + limitingGroup;
 		}
 	}
@@ -1411,8 +1393,8 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 	public boolean matchesLimitGroup(String group) {
 		List<String> worlds = plugin.getConfig().getStringList("limitGroups." + group + ".worlds");
 		List<String> groups = plugin.getConfig().getStringList("limitGroups." + group + ".groups");
-		if((worlds == null || worlds.isEmpty() || worlds.contains(getWorldName()))) {
-			if(groups == null || groups.isEmpty()) {
+		if(worlds.isEmpty() || worlds.contains(getWorldName())) {
+			if(groups.isEmpty()) {
 				return true;
 			} else {
 				boolean inGroups = false;
@@ -1560,8 +1542,8 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 
 				x1 = points.get(numPoints - 1).getBlockX();
 				z1 = points.get(numPoints - 1).getBlockZ();
-				x2 = points.get(0).getBlockX();
-				z2 = points.get(0).getBlockZ();
+				x2 = points.getFirst().getBlockX();
+				z2 = points.getFirst().getBlockZ();
 
 				area += ((z1 + z2) * (x1 - x2));
 				area = Math.ceil(Math.abs(area) / 2);

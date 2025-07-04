@@ -37,14 +37,12 @@ public class DelfriendCommand extends CommandAreaShop {
 		if(person.hasPermission("areashop.delfriendall")) {
 			return true;
 		}
-		if(person instanceof Player) {
-			Player player = (Player)person;
+		if(person instanceof Player player) {
 			return region.isOwner(player) && player.hasPermission("areashop.delfriend");
 		}
 		return false;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void execute(CommandSender sender, String[] args) {
 		if(!sender.hasPermission("areashop.delfriend") && !sender.hasPermission("areashop.delfriendall")) {
@@ -56,7 +54,7 @@ public class DelfriendCommand extends CommandAreaShop {
 			return;
 		}
 		GeneralRegion region;
-		if(args.length <= 2) {
+		if(args.length == 2) {
 			if(sender instanceof Player) {
 				// get the region by location
 				List<GeneralRegion> regions = Utils.getImportantRegions(((Player)sender).getLocation());
@@ -67,7 +65,7 @@ public class DelfriendCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					region = regions.get(0);
+					region = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

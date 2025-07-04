@@ -65,6 +65,7 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 	 * @param flags  The flags to apply
 	 * @return true if the flags have been set correctly, otherwise false
 	 */
+	@SuppressWarnings("UnstableApiUsage")
 	private boolean updateRegionFlags(GeneralRegion region, ConfigurationSection flags) {
 		boolean result = true;
 
@@ -81,7 +82,7 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 		for(String flagName : flagNames) {
 			String value = Message.fromString(flags.getString(flagName)).replacements(region).getPlain();
 			// In the config normal Bukkit color codes are used, those only need to be translated on 5.X WorldGuard versions
-			if(plugin.getWorldGuard().getDescription().getVersion().startsWith("5.")) {
+			if(plugin.getWorldGuard().getPluginMeta().getVersion().startsWith("5.")) {
 				value = translateBukkitToWorldGuardColors(value);
 			}
 			if(flagName.equalsIgnoreCase("members")) {
@@ -120,7 +121,7 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 				}
 			} else {
 				// Parse all other normal flags (groups are also handled)
-				String flagSetting = null;
+				StringBuilder flagSetting = null;
 				com.sk89q.worldguard.protection.flags.RegionGroup groupValue = null;
 
 				Flag<?> foundFlag = plugin.getWorldGuardHandler().fuzzyMatchFlag(flagName);
@@ -139,7 +140,7 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 					//AreaShop.debug("  Flag " + flagName + " reset (+ possible group of flag)");
 				} else {
 					if(groupFlag == null) {
-						flagSetting = value;
+						flagSetting = new StringBuilder(value);
 					} else {
 						for(String part : value.split(" ")) {
 							if(part.startsWith("g:")) {
@@ -152,16 +153,16 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 								}
 							} else {
 								if(flagSetting == null) {
-									flagSetting = part;
+									flagSetting = new StringBuilder(part);
 								} else {
-									flagSetting += " " + part;
+									flagSetting.append(" ").append(part);
 								}
 							}
 						}
 					}
 					if(flagSetting != null) {
 						try {
-							setFlag(worldguardRegion, foundFlag, flagSetting);
+							setFlag(worldguardRegion, foundFlag, flagSetting.toString());
 							//AreaShop.debug("  Flag " + flagName + " set: " + flagSetting);
 						} catch(InvalidFlagFormat e) {
 							AreaShop.warn("Found wrong value for flag " + flagName);
@@ -180,7 +181,7 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 			}
 		}
 		// Indicate that the regions needs to be saved
-		if(worldGuard.getDescription().getVersion().startsWith("5.")) {
+		if(worldGuard.getPluginMeta().getVersion().startsWith("5.")) {
 			plugin.getFileManager().saveIsRequiredForRegionWorld(region.getWorldName());
 		}
 		return result;

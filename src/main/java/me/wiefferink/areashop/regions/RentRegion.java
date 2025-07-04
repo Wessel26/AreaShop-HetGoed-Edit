@@ -136,43 +136,28 @@ public class RentRegion extends GeneralRegion {
 
 	@Override
 	public Object provideReplacement(String variable) {
-		switch(variable) {
-			case AreaShop.tagPrice:
-				return getFormattedPrice();
-			case AreaShop.tagRawPrice:
-				return getPrice();
-			case AreaShop.tagDuration:
-				return getDurationString();
-			case AreaShop.tagPlayerName:
-				return getPlayerName();
-			case AreaShop.tagPlayerUUID:
-				return getRenter();
-			case AreaShop.tagRentedUntil:
-				return new SimpleDateFormat(plugin.getConfig().getString("timeFormatChat")).format(new Date(getRentedUntil()));
-			case AreaShop.tagRentedUntilShort:
-				return new SimpleDateFormat(plugin.getConfig().getString("timeFormatSign")).format(new Date(getRentedUntil()));
-			case AreaShop.tagTimeLeft:
-				return getTimeLeftString();
-			case AreaShop.tagMoneyBackAmount:
-				return getFormattedMoneyBackAmount();
-			case AreaShop.tagRawMoneyBackAmount:
-				return getMoneyBackAmount();
-			case AreaShop.tagMoneyBackPercentage:
-				return (getMoneyBackPercentage() % 1.0) == 0.0 ? (int)getMoneyBackPercentage() : getMoneyBackPercentage();
-			case AreaShop.tagTimesExtended:
-				return this.getTimesExtended();
-			case AreaShop.tagMaxExtends:
-				return this.getMaxExtends();
-			case AreaShop.tagExtendsLeft:
-				return getMaxExtends() - getTimesExtended();
-			case AreaShop.tagMaxRentTime:
-				return millisToHumanFormat(getMaxRentTime());
-			case AreaShop.tagMaxInactiveTime:
-				return this.getFormattedInactiveTimeUntilUnrent();
-
-			default:
-				return super.provideReplacement(variable);
-		}
+		return switch (variable) {
+			case AreaShop.tagPrice -> getFormattedPrice();
+			case AreaShop.tagRawPrice -> getPrice();
+			case AreaShop.tagDuration -> getDurationString();
+			case AreaShop.tagPlayerName -> getPlayerName();
+			case AreaShop.tagPlayerUUID -> getRenter();
+			case AreaShop.tagRentedUntil -> new SimpleDateFormat(plugin.getConfig().getString("timeFormatChat")).format(
+					new Date(getRentedUntil()));
+			case AreaShop.tagRentedUntilShort -> new SimpleDateFormat(
+					plugin.getConfig().getString("timeFormatSign")).format(new Date(getRentedUntil()));
+			case AreaShop.tagTimeLeft -> getTimeLeftString();
+			case AreaShop.tagMoneyBackAmount -> getFormattedMoneyBackAmount();
+			case AreaShop.tagRawMoneyBackAmount -> getMoneyBackAmount();
+			case AreaShop.tagMoneyBackPercentage ->
+					(getMoneyBackPercentage() % 1.0) == 0.0 ? (int) getMoneyBackPercentage() : getMoneyBackPercentage();
+			case AreaShop.tagTimesExtended -> this.getTimesExtended();
+			case AreaShop.tagMaxExtends -> this.getMaxExtends();
+			case AreaShop.tagExtendsLeft -> getMaxExtends() - getTimesExtended();
+			case AreaShop.tagMaxRentTime -> millisToHumanFormat(getMaxRentTime());
+			case AreaShop.tagMaxInactiveTime -> this.getFormattedInactiveTimeUntilUnrent();
+			default -> super.provideReplacement(variable);
+		};
 	}
 
 	/**
@@ -189,7 +174,7 @@ public class RentRegion extends GeneralRegion {
 	 */
 	public String getPlayerName() {
 		String result = Utils.toName(getRenter());
-		if(result == null || result.isEmpty()) {
+		if(result.isEmpty()) {
 			result = config.getString("rent.renterName");
 			if(result == null || result.isEmpty()) {
 				result = "<UNKNOWN>";
@@ -315,7 +300,7 @@ public class RentRegion extends GeneralRegion {
 	 * @return The amount of money the player should get back
 	 */
 	public double getMoneyBackAmount() {
-		Long currentTime = Calendar.getInstance().getTimeInMillis();
+		long currentTime = Calendar.getInstance().getTimeInMillis();
 		Double timeLeft = (double)(getRentedUntil() - currentTime);
 		double percentage = (getMoneyBackPercentage()) / 100.0;
 		Double timePeriod = (double)(getDuration());
@@ -379,7 +364,8 @@ public class RentRegion extends GeneralRegion {
 
 		// Check if a warning needs to be send for each defined point in time
 		Player player = Bukkit.getPlayer(getRenter());
-		long sendUntil = Calendar.getInstance().getTimeInMillis() + (plugin.getConfig().getInt("expireWarning.delay") * 60 * 1000);
+		long sendUntil = Calendar.getInstance().getTimeInMillis() + ((long) plugin.getConfig().getInt(
+				"expireWarning.delay") * 60 * 1000);
 		for(String timeBefore : profileSection.getKeys(false)) {
 			long timeBeforeParsed = Utils.durationStringToLong(timeBefore);
 			if(timeBeforeParsed <= 0) {
@@ -419,7 +405,7 @@ public class RentRegion extends GeneralRegion {
 		}
 
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getRenter());
-		return offlinePlayer != null && rent(offlinePlayer);
+		return rent(offlinePlayer);
 	}
 
 	/**
@@ -487,16 +473,16 @@ public class RentRegion extends GeneralRegion {
 			}
 			AreaShop.debug("LimitResult: " + limitResult.toString());
 			if(!limitResult.actionAllowed()) {
-				if(limitResult.getLimitingFactor() == LimitType.TOTAL) {
-					message(offlinePlayer, "total-maximum", limitResult.getMaximum(), limitResult.getCurrent(), limitResult.getLimitingGroup());
+				if(limitResult.limitingFactor() == LimitType.TOTAL) {
+					message(offlinePlayer, "total-maximum", limitResult.maximum(), limitResult.current(), limitResult.limitingGroup());
 					return false;
 				}
-				if(limitResult.getLimitingFactor() == LimitType.RENTS) {
-					message(offlinePlayer, "rent-maximum", limitResult.getMaximum(), limitResult.getCurrent(), limitResult.getLimitingGroup());
+				if(limitResult.limitingFactor() == LimitType.RENTS) {
+					message(offlinePlayer, "rent-maximum", limitResult.maximum(), limitResult.current(), limitResult.limitingGroup());
 					return false;
 				}
-				if(limitResult.getLimitingFactor() == LimitType.EXTEND) {
-					message(offlinePlayer, "rent-maximumExtend", limitResult.getMaximum(), limitResult.getCurrent() + 1, limitResult.getLimitingGroup());
+				if(limitResult.limitingFactor() == LimitType.EXTEND) {
+					message(offlinePlayer, "rent-maximumExtend", limitResult.maximum(), limitResult.current() + 1, limitResult.limitingGroup());
 					return false;
 				}
 				return false;
@@ -685,7 +671,7 @@ public class RentRegion extends GeneralRegion {
 
 			// Give back the money
 			OfflinePlayer player = Bukkit.getOfflinePlayer(getRenter());
-			if(player != null && !noPayBack) {
+			if(!noPayBack) {
 				r = null;
 				boolean error = false;
 				try {

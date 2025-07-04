@@ -190,7 +190,7 @@ public class AddCommand extends CommandAreaShop {
 
 						// Add existing owners/members if any
 						if(!landlord && !existing.isEmpty()) {
-							UUID rentBy = existing.remove(0);
+							UUID rentBy = existing.removeFirst();
 							OfflinePlayer rentByPlayer = Bukkit.getOfflinePlayer(rentBy);
 
 							RentingRegionEvent rentingRegionEvent = new RentingRegionEvent(rent, rentByPlayer, false);
@@ -234,7 +234,7 @@ public class AddCommand extends CommandAreaShop {
 
 						// Add existing owners/members if any
 						if(!landlord && !existing.isEmpty()) {
-							UUID buyBy = existing.remove(0);
+							UUID buyBy = existing.removeFirst();
 							OfflinePlayer buyByPlayer = Bukkit.getOfflinePlayer(buyBy);
 
 							BuyingRegionEvent buyingRegionEvent = new BuyingRegionEvent(buy, buyByPlayer);
@@ -303,8 +303,7 @@ public class AddCommand extends CommandAreaShop {
 				result.add("buy");
 			}
 		} else if(toComplete == 3) {
-			if(sender instanceof Player) {
-				Player player = (Player)sender;
+			if(sender instanceof Player player) {
 				if(sender.hasPermission("areashop.createrent") || sender.hasPermission("areashop.createbuy")) {
 					for(ProtectedRegion region : plugin.getRegionManager(player.getWorld()).getRegions().values()) {
 						result.add(region.getId());

@@ -35,7 +35,6 @@ public class SetlandlordCommand extends CommandAreaShop {
 			plugin.message(sender, "setlandlord-help");
 			return;
 		}
-		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
 		GeneralRegion region;
 		if(args.length < 3) {
@@ -49,7 +48,7 @@ public class SetlandlordCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					region = regions.get(0);
+					region = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

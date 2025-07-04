@@ -44,11 +44,10 @@ public class StackCommand extends CommandAreaShop {
 			return;
 		}
 		// Only from ingame
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
-		final Player player = (Player)sender;
 		// Specify enough arguments
 		if(args.length < 5) {
 			plugin.message(sender, "stack-help");
@@ -115,7 +114,7 @@ public class StackCommand extends CommandAreaShop {
 			shift = shift.setX(-selection.getWidth() - gap);
 		} else if(facing == BlockFace.DOWN) {
 			shift = shift.setY(-selection.getHeight() - gap);
-		} else if(facing == BlockFace.UP) {
+		} else {
 			shift = shift.setY(selection.getHeight() + gap);
 		}
 		AreaShop.debug("  calculated shift vector: " + shift + ", with facing=" + facing);

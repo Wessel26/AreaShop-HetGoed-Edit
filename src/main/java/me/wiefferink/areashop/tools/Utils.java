@@ -108,7 +108,7 @@ public class Utils {
 	/**
 	 * Get a string list from the config, combined with the entries specified in the default config.
 	 * @param path The path to read the lists from
-	 * @return List with all values defined in the config and the default config combined
+	 * @return Set with all values defined in the config and the default config combined
 	 */
 	private static Set<String> getSetAndDefaults(String path) {
 		Set<String> result = new HashSet<>(config.getStringList(path));
@@ -393,10 +393,10 @@ public class Utils {
 					result.add(pr);
 					first = false;
 				} else {
-					if(pr.getPriority() > result.get(0).getPriority()) {
+					if(pr.getPriority() > result.getFirst().getPriority()) {
 						result.clear();
 						result.add(pr);
-					} else if(pr.getParent() != null && pr.getParent().equals(result.get(0))) {
+					} else if(pr.getParent() != null && pr.getParent().equals(result.getFirst())) {
 						result.clear();
 						result.add(pr);
 					} else {
@@ -477,10 +477,10 @@ public class Utils {
 					result.add(region);
 					first = false;
 				} else {
-					if(region.getRegion().getPriority() > result.get(0).getRegion().getPriority()) {
+					if(region.getRegion().getPriority() > result.getFirst().getRegion().getPriority()) {
 						result.clear();
 						result.add(region);
-					} else if(region.getRegion().getParent() != null && region.getRegion().getParent().equals(result.get(0).getRegion())) {
+					} else if(region.getRegion().getParent() != null && region.getRegion().getParent().equals(result.getFirst().getRegion())) {
 						result.clear();
 						result.add(region);
 					} else {
@@ -520,7 +520,7 @@ public class Utils {
 		String result;
 		// Check for infinite and NaN
 		if(Double.isInfinite(amount)) {
-			result = "\u221E"; // Infinite symbol
+			result = "∞";
 		} else if(Double.isNaN(amount)) {
 			result = "NaN";
 		} else {
@@ -714,7 +714,6 @@ public class Utils {
 	 * @param input The input to check
 	 * @return true if the input is numeric, otherwise false
 	 */
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static boolean isNumeric(String input) {
 		try {
 			Integer.parseInt(input);
@@ -729,7 +728,6 @@ public class Utils {
 	 * @param input The input
 	 * @return true if the input is a double, otherwise false
 	 */
-	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static boolean isDouble(String input) {
 		try {
 			Double.parseDouble(input);
@@ -820,7 +818,6 @@ public class Utils {
 	 * @param name The name of the player
 	 * @return The uuid of the player
 	 */
-	@SuppressWarnings("deprecation") // Fake deprecation by Bukkit to inform developers, method will stay
 	public static String toUniqueId(String name) {
 		if(name == null) {
 			return null;

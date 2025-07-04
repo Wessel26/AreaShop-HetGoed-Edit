@@ -354,7 +354,7 @@ public class TeleportFeature extends RegionFeature {
 				// Let the player look at the sign
 				Vector playerVector = safeLocation.toVector();
 				playerVector.setY(playerVector.getY() + player.getEyeHeight(true));
-				Vector signVector = getRegion().getSignsFeature().getSigns().get(0).getLocation().toVector().add(new Vector(0.5, 0.5, 0.5));
+				Vector signVector = getRegion().getSignsFeature().getSigns().getFirst().getLocation().toVector().add(new Vector(0.5, 0.5, 0.5));
 				Vector direction = playerVector.clone().subtract(signVector).normalize();
 				safeLocation.setYaw(180 - (float)Math.toDegrees(Math.atan2(direction.getX(), direction.getZ())));
 				safeLocation.setPitch(90 - (float)Math.toDegrees(Math.acos(direction.getY())));
@@ -498,14 +498,14 @@ public class TeleportFeature extends RegionFeature {
 		if(toSign.get()) {
 			if(signAvailable) {
 				// Use the location 1 below the sign to prevent weird spawing above the sign
-				startLocation = signs.get(0).getLocation(); //.subtract(0.0, 1.0, 0.0);
+				startLocation = signs.getFirst().getLocation(); //.subtract(0.0, 1.0, 0.0);
 				startLocation.setPitch(player.getLocation().getPitch());
 				startLocation.setYaw(player.getLocation().getYaw());
 
 				// Move player x blocks away from the sign
 				double distance = getRegion().getDoubleSetting("general.teleportSignDistance");
 				if(distance > 0) {
-					BlockFace facing = getRegion().getSignsFeature().getSigns().get(0).getFacing();
+					BlockFace facing = getRegion().getSignsFeature().getSigns().getFirst().getFacing();
 					Vector facingVector = new Vector(facing.getModX(), facing.getModY(), facing.getModZ())
 							.normalize()
 							.multiply(distance);

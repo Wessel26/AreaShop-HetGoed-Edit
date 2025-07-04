@@ -16,7 +16,7 @@ public class RegionGroup {
 	private final String name;
 	private final Set<String> regions;
 	private Set<String> autoRegions;
-	private Set<String> allRegions;
+	private final Set<String> allRegions;
 	private boolean autoDirty;
 	private final Set<String> worlds;
 

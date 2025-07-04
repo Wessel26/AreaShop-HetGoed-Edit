@@ -30,12 +30,11 @@ public class LinksignsCommand extends CommandAreaShop {
 			plugin.message(sender, "linksigns-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
 
-		Player player = (Player)sender;
 		if(plugin.getSignlinkerManager().isInSignLinkMode(player)) {
 			plugin.getSignlinkerManager().exitSignLinkMode(player);
 		} else {

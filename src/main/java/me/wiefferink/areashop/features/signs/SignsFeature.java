@@ -550,7 +550,7 @@ public class SignsFeature extends RegionFeature {
 	 * @return List of signs
 	 */
 	public List<RegionSign> getSigns() {
-		return Collections.unmodifiableList(new ArrayList<>(signs.values()));
+		return List.copyOf(signs.values());
 	}
 
 	/**

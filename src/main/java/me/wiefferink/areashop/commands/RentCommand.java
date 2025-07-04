@@ -29,11 +29,10 @@ public class RentCommand extends CommandAreaShop {
 			plugin.message(sender, "rent-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
-		Player player = (Player)sender;
 		if(args.length > 1 && args[1] != null) {
 			RentRegion rent = plugin.getFileManager().getRent(args[1]);
 			if(rent == null) {
@@ -43,13 +42,13 @@ public class RentCommand extends CommandAreaShop {
 			}
 		} else {
 			// get the region by location
-			List<RentRegion> regions = Utils.getImportantRentRegions(((Player)sender).getLocation());
+			List<RentRegion> regions = Utils.getImportantRentRegions(player.getLocation());
 			if(regions.isEmpty()) {
 				plugin.message(sender, "cmd-noRegionsAtLocation");
 			} else if(regions.size() > 1) {
 				plugin.message(sender, "cmd-moreRegionsAtLocation");
 			} else {
-				regions.get(0).rent(player);
+				regions.getFirst().rent(player);
 			}
 		}
 	}

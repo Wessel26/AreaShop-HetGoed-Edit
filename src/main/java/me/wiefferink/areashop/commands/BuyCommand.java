@@ -29,11 +29,10 @@ public class BuyCommand extends CommandAreaShop {
 			plugin.message(sender, "buy-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "cmd-onlyByPlayer");
 			return;
 		}
-		Player player = (Player)sender;
 		if(args.length > 1 && args[1] != null) {
 			BuyRegion region = plugin.getFileManager().getBuy(args[1]);
 			if(region == null) {
@@ -43,13 +42,13 @@ public class BuyCommand extends CommandAreaShop {
 			}
 		} else {
 			// get the region by location
-			List<BuyRegion> regions = Utils.getImportantBuyRegions(((Player)sender).getLocation());
+			List<BuyRegion> regions = Utils.getImportantBuyRegions(player.getLocation());
 			if(regions.isEmpty()) {
 				plugin.message(sender, "cmd-noRegionsAtLocation");
 			} else if(regions.size() > 1) {
 				plugin.message(sender, "cmd-moreRegionsAtLocation");
 			} else {
-				regions.get(0).buy(player);
+				regions.getFirst().buy(player);
 			}
 		}
 	}

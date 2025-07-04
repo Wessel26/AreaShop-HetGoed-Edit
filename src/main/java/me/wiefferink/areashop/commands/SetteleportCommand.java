@@ -33,10 +33,9 @@ public class SetteleportCommand extends CommandAreaShop {
 	 * @return true if the person can set the teleport location, otherwise false
 	 */
 	public static boolean canUse(CommandSender person, GeneralRegion region) {
-		if(!(person instanceof Player)) {
+		if(!(person instanceof Player player)) {
 			return false;
 		}
-		Player player = (Player)person;
 		return player.hasPermission("areashop.setteleportall")
 				|| region.isOwner(player) && player.hasPermission("areashop.setteleport");
 	}
@@ -47,11 +46,10 @@ public class SetteleportCommand extends CommandAreaShop {
 			plugin.message(sender, "setteleport-noPermission");
 			return;
 		}
-		if(!(sender instanceof Player)) {
+		if(!(sender instanceof Player player)) {
 			plugin.message(sender, "onlyByPlayer");
 			return;
 		}
-		Player player = (Player)sender;
 		GeneralRegion region;
 		if(args.length < 2) {
 			// get the region by location
@@ -63,7 +61,7 @@ public class SetteleportCommand extends CommandAreaShop {
 				plugin.message(sender, "cmd-moreRegionsAtLocation");
 				return;
 			} else {
-				region = regions.get(0);
+				region = regions.getFirst();
 			}
 		} else {
 			region = plugin.getFileManager().getRegion(args[1]);

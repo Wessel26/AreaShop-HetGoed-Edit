@@ -38,6 +38,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -125,7 +126,7 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
 	}
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
+	public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, String @NotNull [] args) {
 		if(!plugin.isReady()) {
 			plugin.message(sender, "general-notReady");
 			return true;
@@ -164,7 +165,7 @@ public class CommandManager extends Manager implements CommandExecutor, TabCompl
 	}
 
 	@Override
-	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+	public List<String> onTabComplete(CommandSender sender, @NotNull Command command, @NotNull String alias, String @NotNull [] args) {
 		List<String> result = new ArrayList<>();
 		if(!sender.hasPermission("areashop.tabcomplete")) {
 			return result;

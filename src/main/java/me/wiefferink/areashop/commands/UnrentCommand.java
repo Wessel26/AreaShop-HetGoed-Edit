@@ -34,8 +34,7 @@ public class UnrentCommand extends CommandAreaShop {
 		if(person.hasPermission("areashop.unrent")) {
 			return true;
 		}
-		if(person instanceof Player) {
-			Player player = (Player)person;
+		if(person instanceof Player player) {
 			return region.isOwner(player) && person.hasPermission("areashop.unrentown");
 		}
 		return false;
@@ -59,7 +58,7 @@ public class UnrentCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					rent = regions.get(0);
+					rent = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

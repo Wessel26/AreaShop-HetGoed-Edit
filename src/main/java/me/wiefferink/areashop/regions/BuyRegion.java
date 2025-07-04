@@ -100,7 +100,7 @@ public class BuyRegion extends GeneralRegion {
 	 */
 	public String getPlayerName() {
 		String result = Utils.toName(getBuyer());
-		if(result == null || result.isEmpty()) {
+		if(result.isEmpty()) {
 			result = getStringSetting("buy.buyerName");
 			if(result == null || result.isEmpty()) {
 				result = "<UNKNOWN>";
@@ -208,31 +208,20 @@ public class BuyRegion extends GeneralRegion {
 
 	@Override
 	public Object provideReplacement(String variable) {
-		switch(variable) {
-			case AreaShop.tagPrice:
-				return getFormattedPrice();
-			case AreaShop.tagRawPrice:
-				return getPrice();
-			case AreaShop.tagPlayerName:
-				return getPlayerName();
-			case AreaShop.tagPlayerUUID:
-				return getBuyer();
-			case AreaShop.tagResellPrice:
-				return getFormattedResellPrice();
-			case AreaShop.tagRawResellPrice:
-				return getResellPrice();
-			case AreaShop.tagMoneyBackAmount:
-				return getFormattedMoneyBackAmount();
-			case AreaShop.tagRawMoneyBackAmount:
-				return getMoneyBackAmount();
-			case AreaShop.tagMoneyBackPercentage:
-				return getMoneyBackPercentage() % 1.0 == 0.0 ? (int)getMoneyBackPercentage() : getMoneyBackPercentage();
-			case AreaShop.tagMaxInactiveTime:
-				return this.getFormattedInactiveTimeUntilSell();
-
-			default:
-				return super.provideReplacement(variable);
-		}
+		return switch (variable) {
+			case AreaShop.tagPrice -> getFormattedPrice();
+			case AreaShop.tagRawPrice -> getPrice();
+			case AreaShop.tagPlayerName -> getPlayerName();
+			case AreaShop.tagPlayerUUID -> getBuyer();
+			case AreaShop.tagResellPrice -> getFormattedResellPrice();
+			case AreaShop.tagRawResellPrice -> getResellPrice();
+			case AreaShop.tagMoneyBackAmount -> getFormattedMoneyBackAmount();
+			case AreaShop.tagRawMoneyBackAmount -> getMoneyBackAmount();
+			case AreaShop.tagMoneyBackPercentage ->
+					getMoneyBackPercentage() % 1.0 == 0.0 ? (int) getMoneyBackPercentage() : getMoneyBackPercentage();
+			case AreaShop.tagMaxInactiveTime -> this.getFormattedInactiveTimeUntilSell();
+			default -> super.provideReplacement(variable);
+		};
 	}
 
 	/**
@@ -322,12 +311,12 @@ public class BuyRegion extends GeneralRegion {
 		LimitResult limitResult = this.limitsAllow(RegionType.BUY, offlinePlayer);
 		AreaShop.debug("LimitResult: " + limitResult.toString());
 		if(!limitResult.actionAllowed()) {
-			if(limitResult.getLimitingFactor() == LimitType.TOTAL) {
-				message(offlinePlayer, "total-maximum", limitResult.getMaximum(), limitResult.getCurrent(), limitResult.getLimitingGroup());
+			if(limitResult.limitingFactor() == LimitType.TOTAL) {
+				message(offlinePlayer, "total-maximum", limitResult.maximum(), limitResult.current(), limitResult.limitingGroup());
 				return false;
 			}
-			if(limitResult.getLimitingFactor() == LimitType.BUYS) {
-				message(offlinePlayer, "buy-maximum", limitResult.getMaximum(), limitResult.getCurrent(), limitResult.getLimitingGroup());
+			if(limitResult.limitingFactor() == LimitType.BUYS) {
+				message(offlinePlayer, "buy-maximum", limitResult.maximum(), limitResult.current(), limitResult.limitingGroup());
 				return false;
 			}
 			// Should not be reached, but is safe like this
@@ -367,7 +356,7 @@ public class BuyRegion extends GeneralRegion {
 			OfflinePlayer oldOwnerPlayer = Bukkit.getOfflinePlayer(oldOwner);
 			String oldOwnerName = getPlayerName();
 
-			if(oldOwnerPlayer != null && oldOwnerPlayer.getName() != null) {
+			if(oldOwnerPlayer.getName() != null) {
 				r = plugin.getEconomy().depositPlayer(oldOwnerPlayer, getWorldName(), getResellPrice());
 				oldOwnerName = oldOwnerPlayer.getName();
 			} else if(oldOwnerName != null) {
@@ -523,7 +512,7 @@ public class BuyRegion extends GeneralRegion {
 
 			// Give back the money
 			OfflinePlayer player = Bukkit.getOfflinePlayer(getBuyer());
-			if(player != null && !noPayBack) {
+			if(!noPayBack) {
 				EconomyResponse response = null;
 				boolean error = false;
 				try {
@@ -575,10 +564,10 @@ public class BuyRegion extends GeneralRegion {
 			return false;
 		}
 		long lastPlayed = getLastActiveTime();
-		//AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastPlayed()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis()-player.getLastPlayed()) + ", inactiveSetting=" + inactiveSetting);
+
 		if(Calendar.getInstance().getTimeInMillis() > (lastPlayed + inactiveSetting)) {
 			AreaShop.info("Region " + getName() + " unrented because of inactivity for player " + getPlayerName());
-			AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastPlayed()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis() - player.getLastPlayed()) + ", inactiveSetting=" + inactiveSetting);
+			AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastPlayed()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis() - player.getLastSeen()) + ", inactiveSetting=" + inactiveSetting);
 			return this.sell(true, null);
 		}
 		return false;

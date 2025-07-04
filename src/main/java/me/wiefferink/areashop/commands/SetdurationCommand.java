@@ -34,7 +34,7 @@ public class SetdurationCommand extends CommandAreaShop {
 			return;
 		}
 		int regionArgument = 3;
-		if(args.length >= 2 && ("default".equalsIgnoreCase(args[1]) || "reset".equalsIgnoreCase(args[1]))) {
+		if("default".equalsIgnoreCase(args[1]) || "reset".equalsIgnoreCase(args[1])) {
 			regionArgument = 2;
 		}
 		RentRegion rent;
@@ -49,7 +49,7 @@ public class SetdurationCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					rent = regions.get(0);
+					rent = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

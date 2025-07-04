@@ -46,13 +46,6 @@ public class MeCommand extends CommandAreaShop {
 		}
 		if(args.length > 1) {
 			player = Bukkit.getOfflinePlayer(args[1]);
-			if(player == null) {
-				plugin.message(sender, "me-noPlayer", args[1]);
-				return;
-			}
-		}
-		if(player == null) {
-			return;
 		}
 
 		// Get the regions owned by the player

@@ -40,18 +40,17 @@ public class DelCommand extends CommandAreaShop {
 		}
 		if(args.length < 2) {
 			// Only players can have a selection
-			if(!(sender instanceof Player)) {
+			if(!(sender instanceof Player player)) {
 				plugin.message(sender, "cmd-weOnlyByPlayer");
 				return;
 			}
-			Player player = (Player)sender;
 			WorldEditSelection selection = plugin.getWorldEditHandler().getPlayerSelection(player);
 			if(selection == null) {
 				plugin.message(player, "cmd-noSelection");
 				return;
 			}
 			List<GeneralRegion> regions = Utils.getRegionsInSelection(selection);
-			if(regions == null || regions.isEmpty()) {
+			if(regions.isEmpty()) {
 				plugin.message(player, "cmd-noRegionsFound");
 				return;
 			}
@@ -60,7 +59,7 @@ public class DelCommand extends CommandAreaShop {
 			TreeSet<GeneralRegion> regionsFailed = new TreeSet<>();
 			TreeSet<GeneralRegion> regionsCancelled = new TreeSet<>();
 			for(GeneralRegion region : regions) {
-				boolean isLandlord = region.isLandlord(((Player)sender).getUniqueId());
+				boolean isLandlord = region.isLandlord(player.getUniqueId());
 				if(region instanceof RentRegion) {
 					if(!sender.hasPermission("areashop.destroyrent") && !(isLandlord && sender.hasPermission("areashop.destroyrent.landlord"))) {
 						regionsFailed.add(region);

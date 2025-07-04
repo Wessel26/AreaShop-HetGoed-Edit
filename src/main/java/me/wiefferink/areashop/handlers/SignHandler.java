@@ -20,22 +20,14 @@ public class SignHandler {
 		}
 
 		BlockState blockState = block.getState();
-		if (blockState == null) {
-			return null;
-		}
-
 		BlockData blockData = blockState.getBlockData();
-		if (blockData == null) {
-			return null;
-		}
 
-		if(blockData instanceof WallSign) {
-			return ((WallSign) blockData).getFacing();
-		} else if(blockData instanceof Sign) {
-			return ((Sign) blockData).getRotation();
-		}
+		return switch (blockData) {
+			case WallSign wallSign -> wallSign.getFacing();
+			case Sign sign -> sign.getRotation();
+			default -> null;
+		};
 
-		return null;
 	}
 
 	/**
@@ -51,22 +43,16 @@ public class SignHandler {
 		}
 
 		BlockState blockState = block.getState();
-		if (blockState == null) {
-			return false;
-		}
-
 		BlockData blockData = blockState.getBlockData();
-		if (blockData == null) {
-			return false;
+
+		switch (blockData) {
+			case WallSign wallSign -> wallSign.setFacing(facing);
+			case Sign sign -> sign.setRotation(facing);
+			default -> {
+				return false;
+			}
 		}
 
-		if(blockData instanceof WallSign) {
-			((WallSign) blockData).setFacing(facing);
-		} else if(blockData instanceof Sign) {
-			((Sign) blockData).setRotation(facing);
-		} else {
-			return false;
-		}
 		block.setBlockData(blockData);
 		return true;
 	}
@@ -83,21 +69,13 @@ public class SignHandler {
 		}
 
 		BlockState blockState = block.getState();
-		if (blockState == null) {
-			return null;
-		}
-
 		org.bukkit.block.data.BlockData blockData = blockState.getBlockData();
-		if (blockData == null) {
-			return null;
-		}
 
-		if(blockData instanceof WallSign) {
-			return block.getRelative(((WallSign) blockData).getFacing().getOppositeFace());
-		} else if(blockData instanceof Sign) {
-			return block.getRelative(BlockFace.DOWN);
-		}
+		return switch (blockData) {
+			case WallSign wallSign -> block.getRelative(wallSign.getFacing().getOppositeFace());
+			case Sign ignored -> block.getRelative(BlockFace.DOWN);
+			default -> null;
+		};
 
-		return null;
 	}
 }

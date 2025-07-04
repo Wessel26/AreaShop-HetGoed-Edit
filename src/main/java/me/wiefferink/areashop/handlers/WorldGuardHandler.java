@@ -29,11 +29,9 @@ import java.util.UUID;
 
 public class WorldGuardHandler {
 	protected final AreaShop plugin;
-	private final WorldGuardPlugin worldGuard;
 
 	public WorldGuardHandler(AreaShop plugin, WorldGuardPlugin worldGuard) {
 		this.plugin = plugin;
-		this.worldGuard = worldGuard;
 	}
 
 	/**
@@ -205,7 +203,7 @@ public class WorldGuardHandler {
 	 */
 	public Vector getMinimumPoint(ProtectedRegion region) {
 		BlockVector3 min = region.getMinimumPoint();
-		return new Vector(min.getX(), min.getY(), min.getZ());
+		return new Vector(min.x(), min.y(), min.z());
 	}
 
 	/**
@@ -216,7 +214,7 @@ public class WorldGuardHandler {
 	 */
 	public Vector getMaximumPoint(ProtectedRegion region) {
 		BlockVector3 min = region.getMaximumPoint();
-		return new Vector(min.getX(), min.getY(), min.getZ());
+		return new Vector(min.x(), min.y(), min.z());
 	}
 
 	/**
@@ -228,7 +226,7 @@ public class WorldGuardHandler {
 	public List<Vector> getRegionPoints(ProtectedRegion region) {
 		List<Vector> result = new ArrayList<>();
 		for (BlockVector2 point : region.getPoints()) {
-			result.add(new Vector(point.getX(), 0,point.getZ()));
+			result.add(new Vector(point.x(), 0,point.z()));
 		}
 		return result;
 	}

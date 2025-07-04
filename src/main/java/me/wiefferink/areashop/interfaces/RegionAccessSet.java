@@ -52,13 +52,10 @@ public class RegionAccessSet {
 	 * @return List of player UUIDs, first players already added by UUID, then players added by name, groups are not in the list
 	 */
 	public List<UUID> asUniqueIdList() {
-		List<UUID> result = new ArrayList<>();
-		result.addAll(playerUniqueIds);
+		List<UUID> result = new ArrayList<>(playerUniqueIds);
 		for(String playerName : playerNames) {
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(playerName);
-			if(offlinePlayer != null && offlinePlayer.getUniqueId() != null) {
-				result.add(offlinePlayer.getUniqueId());
-			}
+			result.add(offlinePlayer.getUniqueId());
 		}
 		return result;
 	}

@@ -4,9 +4,6 @@ import com.destroystokyo.paper.MaterialSetTag;
 import me.wiefferink.areashop.AreaShop;
 import org.bukkit.Material;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 public class Materials {
 
 	private Materials() {

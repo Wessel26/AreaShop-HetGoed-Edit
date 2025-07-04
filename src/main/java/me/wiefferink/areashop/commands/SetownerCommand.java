@@ -51,7 +51,7 @@ public class SetownerCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					region = regions.get(0);
+					region = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");
@@ -60,33 +60,27 @@ public class SetownerCommand extends CommandAreaShop {
 		} else {
 			region = plugin.getFileManager().getRegion(args[2]);
 		}
-		if(region == null) {
-			plugin.message(sender, "setowner-notRegistered");
-			return;
+		switch (region) {
+			case null -> {
+				plugin.message(sender, "setowner-notRegistered");
+				return;
+			}
+			case RentRegion ignored when !sender.hasPermission("areashop.setownerrent") -> {
+				plugin.message(sender, "setowner-noPermissionRent", region);
+				return;
+			}
+			case BuyRegion ignored when !sender.hasPermission("areashop.setownerbuy") -> {
+				plugin.message(sender, "setowner-noPermissionBuy", region);
+				return;
+			}
+			default -> {
+			}
 		}
 
-		if(region instanceof RentRegion && !sender.hasPermission("areashop.setownerrent")) {
-			plugin.message(sender, "setowner-noPermissionRent", region);
-			return;
-		}
-		if(region instanceof BuyRegion && !sender.hasPermission("areashop.setownerbuy")) {
-			plugin.message(sender, "setowner-noPermissionBuy", region);
-			return;
-		}
-
-		UUID uuid = null;
-		@SuppressWarnings("deprecation")
 		OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
-		if(player != null) {
-			uuid = player.getUniqueId();
-		}
-		if(uuid == null) {
-			plugin.message(sender, "setowner-noPlayer", args[1], region);
-			return;
-		}
+		UUID uuid = player.getUniqueId();
 
-		if(region instanceof RentRegion) {
-			RentRegion rent = (RentRegion)region;
+		if(region instanceof RentRegion rent) {
 			if(rent.isRenter(uuid)) {
 				// extend
 				rent.setRentedUntil(rent.getRentedUntil() + rent.getDuration());
@@ -101,8 +95,7 @@ public class SetownerCommand extends CommandAreaShop {
 				plugin.message(sender, "setowner-succesRent", region);
 			}
 		}
-		if(region instanceof BuyRegion) {
-			BuyRegion buy = (BuyRegion)region;
+		if(region instanceof BuyRegion buy) {
 			buy.setBuyer(uuid);
 			plugin.message(sender, "setowner-succesBuy", region);
 		}

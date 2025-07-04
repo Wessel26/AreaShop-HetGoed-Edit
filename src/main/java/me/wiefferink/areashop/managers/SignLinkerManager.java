@@ -98,7 +98,7 @@ public class SignLinkerManager extends Manager implements Listener {
 					Block next = blockIterator.next();
 					List<GeneralRegion> regions = Utils.getRegions(next.getLocation());
 					if(regions.size() == 1) {
-						linker.setRegion(regions.get(0));
+						linker.setRegion(regions.getFirst());
 						return;
 					} else if(regions.size() > 1) {
 						Set<String> names = new HashSet<>();

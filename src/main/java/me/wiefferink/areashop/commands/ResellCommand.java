@@ -48,7 +48,7 @@ public class ResellCommand extends CommandAreaShop {
 		}
 
 		BuyRegion buy;
-		if(args.length <= 2) {
+		if(args.length == 2) {
 			if(sender instanceof Player) {
 				// get the region by location
 				List<BuyRegion> regions = Utils.getImportantBuyRegions(((Player)sender).getLocation());
@@ -59,7 +59,7 @@ public class ResellCommand extends CommandAreaShop {
 					plugin.message(sender, "cmd-moreRegionsAtLocation");
 					return;
 				} else {
-					buy = regions.get(0);
+					buy = regions.getFirst();
 				}
 			} else {
 				plugin.message(sender, "cmd-automaticRegionOnlyByPlayer");

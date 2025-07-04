@@ -47,22 +47,22 @@ import java.util.regex.Pattern;
 
 public class FileManager extends Manager {
 
-	private HashMap<String, GeneralRegion> regions = null;
-	private String regionsPath = null;
-	private HashMap<String, RegionGroup> groups = null;
-	private String configPath = null;
+	private final HashMap<String, GeneralRegion> regions;
+	private final String regionsPath;
+	private final HashMap<String, RegionGroup> groups;
+	private final String configPath;
 	private YamlConfiguration config = null;
-	private String groupsPath = null;
+	private final String groupsPath;
 	private YamlConfiguration groupsConfig = null;
-	private String defaultPath = null;
+	private final String defaultPath;
 	private YamlConfiguration defaultConfig = null;
 	private YamlConfiguration defaultConfigFallback = null;
 	private boolean saveGroupsRequired = false;
 	private final Set<String> worldRegionsRequireSaving;
 
 	private HashMap<String, Integer> versions = null;
-	private String versionPath = null;
-	private String schemFolder = null;
+	private final String versionPath;
+	private final String schemFolder;
 
 	// Enum for region types
 	public enum AddResult {
@@ -298,7 +298,7 @@ public class FileManager extends Manager {
 	/**
 	 * Add a region to the list and mark it as to-be-saved.
 	 * @param region Then region to add
-	 * @return true when successful, otherwise false (denied by an event listener)
+	 * @return AddingRegionEvent for the add attempt
 	 */
 	public AddingRegionEvent addRegion(GeneralRegion region) {
 		AddingRegionEvent event = addRegionNoSave(region);
@@ -313,7 +313,7 @@ public class FileManager extends Manager {
 	/**
 	 * Add a region to the list without saving it to disk (useful for loading at startup).
 	 * @param region The region to add
-	 * @return true when successful, otherwise false (denied by an event listener)
+	 * @return AddingRegionEvent for the add attempt
 	 */
 	public AddingRegionEvent addRegionNoSave(GeneralRegion region) {
 		AddingRegionEvent event = new AddingRegionEvent(region);
@@ -400,7 +400,7 @@ public class FileManager extends Manager {
 	 * Remove a region from the list.
 	 * @param region The region to remove
 	 * @param giveMoneyBack use true to give money back to the player if someone is currently holding this region, otherwise false
-	 * @return true if the region has been removed, false otherwise
+	 * @return DeletingRegionEvent for the add attempt
 	 */
 	public DeletingRegionEvent deleteRegion(GeneralRegion region, boolean giveMoneyBack) {
 		DeletingRegionEvent event = new DeletingRegionEvent(region);
@@ -616,6 +616,7 @@ public class FileManager extends Manager {
 	/**
 	 * Save all worldGuard regions that need saving.
 	 */
+	@SuppressWarnings("UnstableApiUsage")
 	public void saveWorldGuardRegions() {
 		for(String world : worldRegionsRequireSaving) {
 			World bukkitWorld = Bukkit.getWorld(world);
@@ -623,7 +624,7 @@ public class FileManager extends Manager {
 				RegionManager manager = plugin.getRegionManager(bukkitWorld);
 				if(manager != null) {
 					try {
-						if(plugin.getWorldGuard().getDescription().getVersion().startsWith("5.")) {
+						if(plugin.getWorldGuard().getPluginMeta().getVersion().startsWith("5.")) {
 							manager.save();
 						} else {
 							manager.saveChanges();
@@ -992,8 +993,8 @@ public class FileManager extends Manager {
 		boolean noWorldRegions = !noWorld.isEmpty();
 		while(!noWorld.isEmpty()) {
 			List<GeneralRegion> toDisplay = new ArrayList<>();
-			String missingWorld = noWorld.get(0).getWorldName();
-			toDisplay.add(noWorld.get(0));
+			String missingWorld = noWorld.getFirst().getWorldName();
+			toDisplay.add(noWorld.getFirst());
 			for(int i = 1; i < noWorld.size(); i++) {
 				if(noWorld.get(i).getWorldName().equalsIgnoreCase(missingWorld)) {
 					toDisplay.add(noWorld.get(i));
@@ -1102,7 +1103,6 @@ public class FileManager extends Manager {
 							for(String rentName : rents.keySet()) {
 								HashMap<String, String> rent = rents.get(rentName);
 								if(rent.get("player") != null) {
-									@SuppressWarnings("deprecation")  // Fake deprecation by Bukkit to inform developers, method will stay
 									OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(rent.get("player"));
 									rent.put("playeruuid", offlinePlayer.getUniqueId().toString());
 									rent.remove("player");
@@ -1221,8 +1221,7 @@ public class FileManager extends Manager {
 							for(String buyName : buys.keySet()) {
 								HashMap<String, String> buy = buys.get(buyName);
 								if(buy.get("player") != null) {
-									@SuppressWarnings("deprecation")  // Fake deprecation by Bukkit to inform developers, method will stay
-											OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(buy.get("player"));
+									OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(buy.get("player"));
 									buy.put("playeruuid", offlinePlayer.getUniqueId().toString());
 									buy.remove("player");
 								}

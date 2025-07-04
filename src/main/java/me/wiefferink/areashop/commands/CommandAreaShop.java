@@ -89,14 +89,6 @@ public abstract class CommandAreaShop {
 		return false;
 	}
 
-	private class CommandTime {
-		public final String command;
-		public final long time;
-
-		CommandTime(String command, long time) {
-			this.command = command;
-			this.time = time;
-		}
+	private record CommandTime(String command, long time) {
 	}
-
 }
