@@ -2,6 +2,7 @@ package me.wiefferink.areashop.managers;
 
 import me.wiefferink.areashop.features.signs.RegionSign;
 import me.wiefferink.areashop.features.signs.SignsFeature;
+import me.wiefferink.areashop.handlers.SignHandler;
 import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.tools.Materials;
 import me.wiefferink.areashop.tools.Utils;
@@ -130,7 +131,7 @@ public class SignLinkerManager extends Manager implements Listener {
 					plugin.message(player, "linksigns-alreadyRegistered", regionSign.getRegion());
 					return;
 				}
-				linker.setSign(block.getLocation(), block.getType(), plugin.getBukkitHandler().getSignFacing(block));
+				linker.setSign(block.getLocation(), block.getType(), SignHandler.getSignFacing(block));
 			}
 		}
 	}

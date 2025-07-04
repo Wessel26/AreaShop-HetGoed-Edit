@@ -1,7 +1,5 @@
 package me.wiefferink.areashop.handlers;
 
-import me.wiefferink.areashop.interfaces.AreaShopInterface;
-import me.wiefferink.areashop.interfaces.BukkitInterface;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
@@ -9,15 +7,14 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.block.data.type.WallSign;
 
-public class BukkitHandler1_13 extends BukkitInterface {
-
-	public BukkitHandler1_13(AreaShopInterface pluginInterface) {
-		super(pluginInterface);
-	}
-
-	// Uses BlockData, which does not yet exist in 1.12-
-	@Override
-	public BlockFace getSignFacing(Block block) {
+public class SignHandler {
+	/**
+	 * Get the direction a sign is facing.
+	 *
+	 * @param block Sign block to get the facing from
+	 * @return direction the sign is facing
+	 */
+	public static BlockFace getSignFacing(Block block) {
 		if (block == null) {
 			return null;
 		}
@@ -41,9 +38,14 @@ public class BukkitHandler1_13 extends BukkitInterface {
 		return null;
 	}
 
-	// Uses BlockData, WallSign and Sign which don't exist in 1.12-
-	@Override
-	public boolean setSignFacing(Block block, BlockFace facing) {
+	/**
+	 * Set the direction a sign is facing.
+	 *
+	 * @param block  Sign block to update
+	 * @param facing direction to let the sign face
+	 * @return true when successful, otherwise false
+	 */
+	public static boolean setSignFacing(Block block, BlockFace facing) {
 		if (block == null || facing == null) {
 			return false;
 		}
@@ -69,8 +71,13 @@ public class BukkitHandler1_13 extends BukkitInterface {
 		return true;
 	}
 
-	@Override
-	public Block getSignAttachedTo(Block block) {
+	/**
+	 * Get the block a sign is attached to.
+	 *
+	 * @param block Sign block
+	 * @return Block the sign is attached to, or null when not a sign or not attached
+	 */
+	public static Block getSignAttachedTo(Block block) {
 		if (block == null) {
 			return null;
 		}
@@ -93,5 +100,4 @@ public class BukkitHandler1_13 extends BukkitInterface {
 
 		return null;
 	}
-
 }

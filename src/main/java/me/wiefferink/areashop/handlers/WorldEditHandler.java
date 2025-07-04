@@ -5,6 +5,7 @@ import com.sk89q.worldedit.IncompleteRegionException;
 import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
@@ -23,9 +24,8 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.util.io.Closer;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import com.sk89q.worldguard.protection.regions.RegionType;
-import me.wiefferink.areashop.interfaces.AreaShopInterface;
+import me.wiefferink.areashop.AreaShop;
 import me.wiefferink.areashop.interfaces.GeneralRegionInterface;
-import me.wiefferink.areashop.interfaces.WorldEditInterface;
 import me.wiefferink.areashop.interfaces.WorldEditSelection;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bukkit.entity.Player;
@@ -37,16 +37,24 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class WorldEditHandler7_3 extends WorldEditInterface {
+public class WorldEditHandler {
+	protected final AreaShop plugin;
+	private final WorldEditPlugin worldEdit;
 
-	public WorldEditHandler7_3(AreaShopInterface pluginInterface) {
-		super(pluginInterface);
+	public WorldEditHandler(AreaShop plugin, WorldEditPlugin worldEdit) {
+		this.plugin = plugin;
+		this.worldEdit = worldEdit;
 	}
 
-	@Override
+	/**
+	 * Get the selection of the player.
+	 *
+	 * @param player Player to get the selection for
+	 * @return WorldEditSelection if the player has selected something, otherwise null
+	 */
 	public WorldEditSelection getPlayerSelection(Player player) {
 		try {
-			Region region = pluginInterface.getWorldEdit().getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
+			Region region = worldEdit.getSession(player).getSelection(BukkitAdapter.adapt(player.getWorld()));
 			return new WorldEditSelection(
 					player.getWorld(),
 					BukkitAdapter.adapt(player.getWorld(), region.getMinimumPoint()),
@@ -57,7 +65,13 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 		}
 	}
 
-	@Override
+	/**
+	 * Loads the contents of a region from a schematic
+	 *
+	 * @param rawFile            File to try restoring from to the location of the region
+	 * @param regionInterface Region to restore from
+	 * @return true when successful, otherwise false
+	 */
 	public boolean restoreRegionBlocks(File rawFile, GeneralRegionInterface regionInterface) {
 		File file = null;
 		ClipboardFormat format = null;
@@ -71,24 +85,24 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 			}
 		}
 		if(file == null) {
-			pluginInterface.getLogger().info("Did not restore region " + regionInterface.getName() + ", schematic file does not exist: " + rawFile.getAbsolutePath());
+			plugin.getLogger().info("Did not restore region " + regionInterface.getName() + ", schematic file does not exist: " + rawFile.getAbsolutePath());
 			return false;
 		}
-		pluginInterface.debugI("Trying to restore region", regionInterface.getName(), "from file", file.getAbsolutePath(), "with format", format.getName());
+		plugin.debugI("Trying to restore region", regionInterface.getName(), "from file", file.getAbsolutePath(), "with format", format.getName());
 
 		com.sk89q.worldedit.world.World world = null;
 		if(regionInterface.getName() != null) {
 			world = BukkitAdapter.adapt(regionInterface.getWorld());
 		}
 		if(world == null) {
-			pluginInterface.getLogger().info("Did not restore region " + regionInterface.getName() + ", world not found: " + regionInterface.getWorldName());
+			plugin.getLogger().info("Did not restore region " + regionInterface.getName() + ", world not found: " + regionInterface.getWorldName());
 			return false;
 		}
 
-		EditSession editSession = pluginInterface.getWorldEdit().getWorldEdit()
+		EditSession editSession = worldEdit.getWorldEdit()
 				.newEditSessionBuilder()
 				.world(world)
-				.maxBlocks(pluginInterface.getConfig().getInt("maximumBlocks"))
+				.maxBlocks(plugin.getConfig().getInt("maximumBlocks"))
 				.build();
 
 		ProtectedRegion region = regionInterface.getRegion();
@@ -102,17 +116,17 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 			ClipboardReader reader = format.getReader(bis);
 
 			//WorldData worldData = world.getWorldData();
-			LocalSession session = new LocalSession(pluginInterface.getWorldEdit().getLocalConfiguration());
+			LocalSession session = new LocalSession(worldEdit.getLocalConfiguration());
 			Clipboard clipboard = reader.read();
 			if(clipboard.getDimensions().y() != regionInterface.getHeight()
 					|| clipboard.getDimensions().x() != regionInterface.getWidth()
 					|| clipboard.getDimensions().z() != regionInterface.getDepth()) {
-				pluginInterface.getLogger().warning("Size of the region " + regionInterface.getName() + " is not the same as the schematic to restore!");
-				pluginInterface.debugI("schematic|region, x:" + clipboard.getDimensions().x() + "|" + regionInterface.getWidth() + ", y:" + clipboard.getDimensions().y() + "|" + regionInterface.getHeight() + ", z:" + clipboard.getDimensions().z() + "|" + regionInterface.getDepth());
+				plugin.getLogger().warning("Size of the region " + regionInterface.getName() + " is not the same as the schematic to restore!");
+				plugin.debugI("schematic|region, x:" + clipboard.getDimensions().x() + "|" + regionInterface.getWidth() + ", y:" + clipboard.getDimensions().y() + "|" + regionInterface.getHeight() + ", z:" + clipboard.getDimensions().z() + "|" + regionInterface.getDepth());
 			}
 			clipboard.setOrigin(clipboard.getMinimumPoint());
 			ClipboardHolder clipboardHolder = new ClipboardHolder(clipboard);
-			session.setBlockChangeLimit(pluginInterface.getConfig().getInt("maximumBlocks"));
+			session.setBlockChangeLimit(plugin.getConfig().getInt("maximumBlocks"));
 			session.setClipboard(clipboardHolder);
 
 			// Build operation
@@ -137,22 +151,28 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 			}
 			Operations.completeLegacy(copy);
 		} catch(MaxChangedBlocksException e) {
-			pluginInterface.getLogger().warning("exceeded the block limit while restoring schematic of " + regionInterface.getName() + ", limit in exception: " + e.getBlockLimit() + ", limit passed by AreaShop: " + pluginInterface.getConfig().getInt("maximumBlocks"));
+			plugin.getLogger().warning("exceeded the block limit while restoring schematic of " + regionInterface.getName() + ", limit in exception: " + e.getBlockLimit() + ", limit passed by AreaShop: " + plugin.getConfig().getInt("maximumBlocks"));
 			return false;
 		} catch(IOException e) {
-			pluginInterface.getLogger().warning("An error occured while restoring schematic of " + regionInterface.getName() + ", enable debug to see the complete stacktrace");
-			pluginInterface.debugI(ExceptionUtils.getStackTrace(e));
+			plugin.getLogger().warning("An error occured while restoring schematic of " + regionInterface.getName() + ", enable debug to see the complete stacktrace");
+			plugin.debugI(ExceptionUtils.getStackTrace(e));
 			return false;
 		} catch (Exception e) {
-			pluginInterface.getLogger().warning("crashed during restore of " + regionInterface.getName());
-			pluginInterface.debugI(ExceptionUtils.getStackTrace(e));
+			plugin.getLogger().warning("crashed during restore of " + regionInterface.getName());
+			plugin.debugI(ExceptionUtils.getStackTrace(e));
 			return false;
 		}
 		editSession.close();
 		return true;
 	}
 
-	@Override
+	/**
+	 * Saves the contents of a region to a schematic
+	 *
+	 * @param file            File to try saving the region to
+	 * @param regionInterface Region to restore from
+	 * @return true when successful, otherwise false
+	 */
 	public boolean saveRegionBlocks(File file, GeneralRegionInterface regionInterface) {
 		ClipboardFormat format = ClipboardFormats.findByAlias("sponge.3");
 		if(format == null) {
@@ -161,26 +181,26 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 				format = otherFormat;
 			}
 			if(format == null) {
-				pluginInterface.getLogger().warning("Cannot find a format to save a schematic in, no available formats!");
+				plugin.getLogger().warning("Cannot find a format to save a schematic in, no available formats!");
 				return false;
 			}
 		}
 
 		file = new File(file.getAbsolutePath() + "." + format.getPrimaryFileExtension());
-		pluginInterface.debugI("Trying to save region", regionInterface.getName(), " to file", file.getAbsolutePath(), "with format", format.getName());
+		plugin.debugI("Trying to save region", regionInterface.getName(), " to file", file.getAbsolutePath(), "with format", format.getName());
 		com.sk89q.worldedit.world.World world = null;
 		if(regionInterface.getWorld() != null) {
 			world = BukkitAdapter.adapt(regionInterface.getWorld());
 		}
 		if(world == null) {
-			pluginInterface.getLogger().warning("Did not save region " + regionInterface.getName() + ", world not found: " + regionInterface.getWorldName());
+			plugin.getLogger().warning("Did not save region " + regionInterface.getName() + ", world not found: " + regionInterface.getWorldName());
 			return false;
 		}
 
-		EditSession editSession = pluginInterface.getWorldEdit().getWorldEdit()
+		EditSession editSession = worldEdit.getWorldEdit()
 				.newEditSessionBuilder()
 				.world(world)
-				.maxBlocks(pluginInterface.getConfig().getInt("maximumBlocks"))
+				.maxBlocks(plugin.getConfig().getInt("maximumBlocks"))
 				.build();
 
 		// Create a clipboard
@@ -191,7 +211,7 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 		try {
 			Operations.completeLegacy(copy);
 		} catch(MaxChangedBlocksException e) {
-			pluginInterface.getLogger().warning("Exceeded the block limit while saving schematic of " + regionInterface.getName() + ", limit in exception: " + e.getBlockLimit() + ", limit passed by AreaShop: " + pluginInterface.getConfig().getInt("maximumBlocks"));
+			plugin.getLogger().warning("Exceeded the block limit while saving schematic of " + regionInterface.getName() + ", limit in exception: " + e.getBlockLimit() + ", limit passed by AreaShop: " + plugin.getConfig().getInt("maximumBlocks"));
 			return false;
 		}
 
@@ -201,12 +221,12 @@ public class WorldEditHandler7_3 extends WorldEditInterface {
 			ClipboardWriter writer = closer.register(format.getWriter(bos));
 			writer.write(clipboard);
 		} catch(IOException e) {
-			pluginInterface.getLogger().warning("An error occured while saving schematic of " + regionInterface.getName() + ", enable debug to see the complete stacktrace");
-			pluginInterface.debugI(ExceptionUtils.getStackTrace(e));
+			plugin.getLogger().warning("An error occured while saving schematic of " + regionInterface.getName() + ", enable debug to see the complete stacktrace");
+			plugin.debugI(ExceptionUtils.getStackTrace(e));
 			return false;
 		} catch (Exception e) {
-			pluginInterface.getLogger().warning("crashed during save of " + regionInterface.getName());
-			pluginInterface.debugI(ExceptionUtils.getStackTrace(e));
+			plugin.getLogger().warning("crashed during save of " + regionInterface.getName());
+			plugin.debugI(ExceptionUtils.getStackTrace(e));
 			return false;
 		}
 		return true;

@@ -2,6 +2,7 @@ package me.wiefferink.areashop.commands;
 
 import me.wiefferink.areashop.features.signs.RegionSign;
 import me.wiefferink.areashop.features.signs.SignsFeature;
+import me.wiefferink.areashop.handlers.SignHandler;
 import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.tools.Materials;
 import me.wiefferink.areashop.tools.Utils;
@@ -91,7 +92,7 @@ public class AddsignCommand extends CommandAreaShop {
 			return;
 		}
 
-		region.getSignsFeature().addSign(block.getLocation(), block.getType(), plugin.getBukkitHandler().getSignFacing(block), profile);
+		region.getSignsFeature().addSign(block.getLocation(), block.getType(), SignHandler.getSignFacing(block), profile);
 		if(profile == null) {
 			plugin.message(sender, "addsign-success", region);
 		} else {

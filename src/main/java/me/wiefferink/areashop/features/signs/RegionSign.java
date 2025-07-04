@@ -2,6 +2,7 @@ package me.wiefferink.areashop.features.signs;
 
 import com.google.common.base.Objects;
 import me.wiefferink.areashop.AreaShop;
+import me.wiefferink.areashop.handlers.SignHandler;
 import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.tools.Materials;
 import me.wiefferink.areashop.tools.Utils;
@@ -151,7 +152,7 @@ public class RegionSign {
 			block.setType(signType, false);
 
 			// This triggers a physics update, which pops the sign if not attached properly
-			if (!AreaShop.getInstance().getBukkitHandler().setSignFacing(block, getFacing())) {
+			if (!SignHandler.setSignFacing(block, getFacing())) {
 				AreaShop.warn("Failed to update the facing direction of the sign at", getStringLocation(), "to ", getFacing(), ", region:", getRegion().getName());
 			}
 
@@ -167,7 +168,7 @@ public class RegionSign {
 			getRegion().setSetting("general.signs." + key + ".signType", block.getType().name());
 		}
 		if(!regionConfig.isString("general.signs." + key + ".facing")) {
-			BlockFace signFacing = AreaShop.getInstance().getBukkitHandler().getSignFacing(block);
+			BlockFace signFacing = SignHandler.getSignFacing(block);
 			getRegion().setSetting("general.signs." + key + ".facing", signFacing == null ? null : signFacing.toString());
 		}
 

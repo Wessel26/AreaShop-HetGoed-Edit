@@ -6,6 +6,7 @@ import me.wiefferink.areashop.AreaShop;
 import me.wiefferink.areashop.events.ask.AddingRegionEvent;
 import me.wiefferink.areashop.events.notify.UpdateRegionEvent;
 import me.wiefferink.areashop.features.RegionFeature;
+import me.wiefferink.areashop.handlers.SignHandler;
 import me.wiefferink.areashop.managers.FileManager;
 import me.wiefferink.areashop.regions.BuyRegion;
 import me.wiefferink.areashop.regions.GeneralRegion;
@@ -115,7 +116,7 @@ public class SignsFeature extends RegionFeature {
 		}
 
 		// Check if still attached to a block
-		Block attachedBlock = plugin.getBukkitHandler().getSignAttachedTo(event.getBlock());
+		Block attachedBlock = SignHandler.getSignAttachedTo(event.getBlock());
 		// TODO: signs cannot be placed on all blocks, improve this check to isSolid()?
 		if (attachedBlock.getType() != Material.AIR) {
 			return;
@@ -290,7 +291,7 @@ public class SignsFeature extends RegionFeature {
 				if(durationSet) {
 					rent.setDuration(thirdLine);
 				}
-				rent.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), plugin.getBukkitHandler().getSignFacing(event.getBlock()), null);
+				rent.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), SignHandler.getSignFacing(event.getBlock()), null);
 
 				AddingRegionEvent addingRegionEvent = plugin.getFileManager().addRegion(rent);
 				if (addingRegionEvent.isCancelled()) {
@@ -394,7 +395,7 @@ public class SignsFeature extends RegionFeature {
 				if(priceSet) {
 					buy.setPrice(price);
 				}
-				buy.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), plugin.getBukkitHandler().getSignFacing(event.getBlock()), null);
+				buy.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), SignHandler.getSignFacing(event.getBlock()), null);
 
 				AddingRegionEvent addingRegionEvent = plugin.getFileManager().addRegion(buy);
 				if (addingRegionEvent.isCancelled()) {
@@ -440,10 +441,10 @@ public class SignsFeature extends RegionFeature {
 			}
 
 			if(thirdLine == null || thirdLine.isEmpty()) {
-				region.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), plugin.getBukkitHandler().getSignFacing(event.getBlock()), null);
+				region.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), SignHandler.getSignFacing(event.getBlock()), null);
 				plugin.message(player, "addsign-success", region);
 			} else {
-				region.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), plugin.getBukkitHandler().getSignFacing(event.getBlock()), thirdLine);
+				region.getSignsFeature().addSign(event.getBlock().getLocation(), event.getBlock().getType(), SignHandler.getSignFacing(event.getBlock()), thirdLine);
 				plugin.message(player, "addsign-successProfile", thirdLine, region);
 			}
 
