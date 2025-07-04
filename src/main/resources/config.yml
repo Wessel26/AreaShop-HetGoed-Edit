@@ -103,9 +103,6 @@ blacklist:
 stackRegionNumberLength: 3
 # Allow/disallow adding players that did not visit the server yet as friend of a region.
 addFriendNotExistingPlayers: false
-# Enable sending stats to http://mcstats.org/ (Metrics plugin).
-# This information will give me an indication about how much the plugin is used and encourages me to continue development.
-sendStats: true
 # Use colors when sending messages to console and log files.
 useColorsInConsole: false
 # Use tellraw style messages, which can be interacted with by players
