@@ -2,11 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>me.wiefferink</groupId>
-  <artifactId>areashop-parent</artifactId>
-  <packaging>pom</packaging>
-  <version>parent</version>
-  <name>AreaShop Parent</name>
-  <url>https://github.com/NLthijs48/AreaShop</url>
+  <artifactId>areashop</artifactId>
+  <packaging>jar</packaging>
+  <name>AreaShop</name>
+  <version>2.6.0</version> <!-- Main plugin version -->
 
   <licenses>
     <license>
@@ -31,20 +30,58 @@
       </repository>
   </repositories>
 
+  <dependencies>
+    <dependency>
+      <groupId>io.papermc.paper</groupId>
+      <artifactId>paper-api</artifactId>
+      <version>1.21.4-R0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- InteractiveMessenger library -->
+    <dependency>
+      <groupId>com.github.NLthijs48</groupId>
+      <artifactId>InteractiveMessenger</artifactId>
+      <version>1.1</version>
+    </dependency>
+
+    <!-- BukkitDo library -->
+    <dependency>
+      <groupId>com.github.NLthijs48</groupId>
+      <artifactId>BukkitDo</artifactId>
+      <version>819d51ec2b</version>
+    </dependency>
+
+    <!-- WorldEdit/WorldGuard -->
+    <dependency>
+      <groupId>com.sk89q.worldedit</groupId>
+      <artifactId>worldedit-bukkit</artifactId>
+      <scope>provided</scope>
+      <version>7.3.10</version>
+    </dependency>
+    <dependency>
+      <groupId>com.sk89q.worldguard</groupId>
+      <artifactId>worldguard-bukkit</artifactId>
+      <scope>provided</scope>
+      <version>7.0.13</version>
+    </dependency>
+
+    <!-- Vault -->
+    <dependency>
+      <groupId>net.milkbowl.vault</groupId>
+      <artifactId>VaultAPI</artifactId>
+      <scope>system</scope>
+      <version>any</version>
+      <systemPath>${project.basedir}/dependencies/VaultAPI-1.4.jar</systemPath>
+    </dependency>
+  </dependencies>
+
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <build.number>#RTGAME</build.number>
   </properties>
-
-  <modules>
-    <module>areashop-interface</module>
-    <module>areashop-bukkit-1_13</module>
-    <module>areashop-worldguard-7</module>
-    <module>areashop-worldedit-7_3</module>
-    <module>AreaShop</module>
-  </modules>
 
   <pluginRepositories>
     <pluginRepository>
@@ -53,37 +90,153 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <profiles>
+    <!-- Copy the jar file to a test server, activate by using -DcopyResult="/path/to/test/server" -->
+    <profile>
+      <id>test-locally</id>
+      <activation>
+        <property>
+          <name>copyResult</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <version>3.0.0</version>
+            <configuration>
+              <target>
+                <copy file="./target/${project.build.finalName}.jar"
+                      tofile="${copyResult}\${project.build.finalName}.jar"/>
+              </target>
+            </configuration>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>run</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Package the source files in a jar, activate by using -Dsources -->
+    <profile>
+      <id>package-sources</id>
+      <activation>
+        <property>
+          <name>sources</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-source-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <id>attach-sources</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!-- Produce javadoc files, activate by using -Djavadoc -->
+    <profile>
+      <id>generate-javadoc</id>
+      <activation>
+        <property>
+          <name>javadoc</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-javadoc-plugin</artifactId>
+            <version>3.3.0</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <id>attach-javadocs</id>
+                <goals>
+                  <goal>jar</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <excludePackageNames>me.wiefferink.areashop.lib</excludePackageNames>
+              <destDir>${javadoc}</destDir>
+              <links>
+                <link>https://hub.spigotmc.org/javadocs/bukkit/</link>
+                <link>http://docs.sk89q.com/worldedit/apidocs/</link>
+                <link>http://docs.sk89q.com/worldguard/apidocs/</link>
+              </links>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
   <build>
+    <directory>target</directory>
+    <resources>
+      <resource>
+        <targetPath>.</targetPath>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>plugin.yml</include>
+          <include>config.yml</include>
+          <include>hiddenConfig.yml</include>
+          <include>default.yml</include>
+          <include>README.md</include>
+          <include>lang/*.yml</include>
+        </includes>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.0</version>
-        <dependencies>
-          <dependency>
-            <groupId>com.puppycrawl.tools</groupId>
-            <artifactId>checkstyle</artifactId>
-            <version>8.21</version>
-          </dependency>
-        </dependencies>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.5.1</version>
         <executions>
           <execution>
-            <id>validate</id>
-            <phase>validate</phase>
-            <configuration>
-              <configLocation>config/checkstyle.xml</configLocation>
-              <suppressionsLocation>config/checkstyle-suppressions.xml</suppressionsLocation>
-              <suppressionsFileExpression>config/checkstyle.suppressions.file</suppressionsFileExpression>
-              <encoding>UTF-8</encoding>
-              <consoleOutput>true</consoleOutput>
-              <failsOnError>true</failsOnError>
-              <violationSeverity>error</violationSeverity>
-            </configuration>
+            <phase>package</phase>
             <goals>
-              <goal>check</goal>
+              <goal>shade</goal>
             </goals>
+            <configuration>
+              <relocations>
+                <!-- Relocate messaging framework -->
+                <relocation>
+                  <pattern>me.wiefferink.interactivemessenger</pattern>
+                  <shadedPattern>me.wiefferink.areashop.shaded.interactivemessenger</shadedPattern>
+                </relocation>
+                <!-- Relocate BukkitDo -->
+                <relocation>
+                  <pattern>me.wiefferink.bukkitdo</pattern>
+                  <shadedPattern>me.wiefferink.areashop.shaded.bukkitdo</shadedPattern>
+                </relocation>
+              </relocations>
+            </configuration>
           </execution>
         </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
       </plugin>
     </plugins>
   </build>
