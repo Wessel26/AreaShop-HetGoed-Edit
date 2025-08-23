@@ -25,6 +25,8 @@ import org.bukkit.command.CommandException;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Hanging;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -782,13 +784,12 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 
 		//Remove entities already in the region
 		getWorld().getNearbyEntities(bounds).forEach(e -> {
-			if(e instanceof Player) {
-				return;
-			}
+			if(e instanceof Hanging || e instanceof ArmorStand) {
+				Location location = e.getLocation();
 
-			Location location = e.getLocation();
-			if(region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ())) {
-				e.remove();
+				if (region.contains(location.getBlockX(), location.getBlockY(), location.getBlockZ())) {
+					e.remove();
+				}
 			}
 		});
 
