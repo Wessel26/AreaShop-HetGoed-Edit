@@ -13,7 +13,7 @@ commands:
     aliases: [as]
 awareness:
   - !@UTF8
-api-version: '1.21.4'
+api-version: '1.21.10'
 permissions:
   areashop.*:
     description: Give access to all commands of AreaShop
