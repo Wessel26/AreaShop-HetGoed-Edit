@@ -239,9 +239,9 @@ public class Utils {
 			if(object != null) {
 				if(first) {
 					first = false;
-					result.append(object.toString());
+					result.append(object);
 				} else {
-					result.append(", ").append(object.toString());
+					result.append(", ").append(object);
 				}
 			}
 		}
@@ -802,15 +802,14 @@ public class Utils {
 	 * @return the name of the player
 	 */
 	public static String toName(UUID uuid) {
-		if(uuid == null) {
-			return "";
-		} else {
+		if (uuid != null) {
 			String name = Bukkit.getOfflinePlayer(uuid).getName();
-			if(name != null) {
+			if (name != null) {
 				return name;
 			}
-			return "";
 		}
+
+		return "";
 	}
 
 	/**

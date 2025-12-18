@@ -363,7 +363,7 @@ public class TeleportFeature extends RegionFeature {
 			}
 
 			player.teleport(safeLocation);
-			AreaShop.debug("Found location: " + safeLocation.toString() + " Tries: " + (checked - 1));
+			AreaShop.debug("Found location: " + safeLocation + " Tries: " + (checked - 1));
 			return true;
 		} else {
 			getRegion().message(player, "teleport-noSafe", checked - 1, maxTries);

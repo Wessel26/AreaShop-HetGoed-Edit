@@ -53,7 +53,7 @@ public class SetteleportCommand extends CommandAreaShop {
 		GeneralRegion region;
 		if(args.length < 2) {
 			// get the region by location
-			List<GeneralRegion> regions = Utils.getImportantRegions(((Player)sender).getLocation());
+			List<GeneralRegion> regions = Utils.getImportantRegions(player.getLocation());
 			if(regions.isEmpty()) {
 				plugin.message(sender, "cmd-noRegionsAtLocation");
 				return;

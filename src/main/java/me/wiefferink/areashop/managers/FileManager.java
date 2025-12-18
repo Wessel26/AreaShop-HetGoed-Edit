@@ -122,11 +122,6 @@ public class FileManager extends Manager {
 		saveRequiredFilesAtOnce();
 	}
 
-
-	//////////////////////////////////////////////////////////
-	// GETTERS
-	//////////////////////////////////////////////////////////
-
 	/**
 	 * Get the folder where schematics are stored.
 	 * @return The folder where schematics are stored
@@ -450,7 +445,7 @@ public class FileManager extends Manager {
 				deleted = false;
 			}
 			if(!deleted) {
-				AreaShop.warn("File could not be deleted: " + file.toString());
+				AreaShop.warn("File could not be deleted: " + file);
 			}
 		}
 
@@ -616,7 +611,6 @@ public class FileManager extends Manager {
 	/**
 	 * Save all worldGuard regions that need saving.
 	 */
-	@SuppressWarnings("UnstableApiUsage")
 	public void saveWorldGuardRegions() {
 		for(String world : worldRegionsRequireSaving) {
 			World bukkitWorld = Bukkit.getWorld(world);

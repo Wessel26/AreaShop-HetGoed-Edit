@@ -6,6 +6,7 @@ import me.wiefferink.areashop.regions.RegionGroup;
 import me.wiefferink.areashop.regions.RentRegion;
 import me.wiefferink.areashop.tools.Utils;
 import me.wiefferink.interactivemessenger.processing.Message;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -125,7 +126,7 @@ public class InfoCommand extends CommandAreaShop {
 				}
 				// Fill up space if the page is not full (aligns header nicely)
 				for(int i = linesPrinted; i < maximumItems - 1; i++) {
-					sender.sendMessage(" ");
+					sender.sendMessage(Component.empty());
 				}
 				footer.send(sender);
 			}

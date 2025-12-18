@@ -7,12 +7,14 @@ import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.tools.Materials;
 import me.wiefferink.areashop.tools.Utils;
 import me.wiefferink.interactivemessenger.processing.Message;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -176,12 +178,14 @@ public class RegionSign {
 		Sign signState = (Sign) block.getState();
 		for(int i = 0; i < signLines.length; i++) {
 			if(signLines[i] == null) {
-				signState.setLine(i, "");
+				signState.getSide(Side.FRONT).line(i, Component.empty());
+				signState.getSide(Side.BACK).line(i, Component.empty());
 				continue;
 			}
 			signLines[i] = Message.fromString(signLines[i]).replacements(getRegion()).getSingle();
 			signLines[i] = Utils.applyColors(signLines[i]);
-			signState.setLine(i, signLines[i]);
+			signState.getSide(Side.FRONT).setLine(i, signLines[i]);
+			signState.getSide(Side.BACK).setLine(i, signLines[i]);
 		}
 		signState.update();
 		return true;

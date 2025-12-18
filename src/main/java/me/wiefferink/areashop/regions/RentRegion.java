@@ -196,11 +196,7 @@ public class RentRegion extends GeneralRegion {
 	 * @param rentedUntil The time until the region is rented
 	 */
 	public void setRentedUntil(Long rentedUntil) {
-		if(rentedUntil == null) {
-			setSetting("rent.rentedUntil", null);
-		} else {
-			setSetting("rent.rentedUntil", rentedUntil);
-		}
+		setSetting("rent.rentedUntil", rentedUntil);
 	}
 
 	/**
@@ -434,10 +430,7 @@ public class RentRegion extends GeneralRegion {
 			message(offlinePlayer, "general-noRegion");
 			return false;
 		}
-		boolean extend = false;
-		if(getRenter() != null && offlinePlayer.getUniqueId().equals(getRenter())) {
-			extend = true;
-		}
+		boolean extend = getRenter() != null && offlinePlayer.getUniqueId().equals(getRenter());
 
 		// Check if available or extending
 		if (isRented() && !extend) {
@@ -728,7 +721,7 @@ public class RentRegion extends GeneralRegion {
 		//AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastPlayed()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis()-player.getLastPlayed()) + ", inactiveSetting=" + inactiveSetting);
 		if(Calendar.getInstance().getTimeInMillis() > (lastPlayed + inactiveSetting)) {
 			AreaShop.info("Region " + getName() + " unrented because of inactivity for player " + getPlayerName());
-			AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastPlayed()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis() - player.getLastPlayed()) + ", inactiveSetting=" + inactiveSetting);
+			AreaShop.debug("currentTime=" + Calendar.getInstance().getTimeInMillis() + ", getLastSeen()=" + lastPlayed + ", timeInactive=" + (Calendar.getInstance().getTimeInMillis() - player.getLastSeen()) + ", inactiveSetting=" + inactiveSetting);
 			return this.unRent(true, null);
 		}
 		return false;

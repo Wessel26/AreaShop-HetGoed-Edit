@@ -1148,7 +1148,7 @@ public abstract class GeneralRegion implements GeneralRegionInterface, Comparabl
 		} else if(result instanceof ConfigurationSection) {
 			return (ConfigurationSection)result;
 		} else {
-			return plugin.getConfig().getConfigurationSection(translateProfileName + "." + result.toString());
+			return plugin.getConfig().getConfigurationSection(translateProfileName + "." + result);
 		}
 	}
 

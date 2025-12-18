@@ -65,7 +65,6 @@ public class WorldGuardRegionFlagsFeature extends RegionFeature {
 	 * @param flags  The flags to apply
 	 * @return true if the flags have been set correctly, otherwise false
 	 */
-	@SuppressWarnings("UnstableApiUsage")
 	private boolean updateRegionFlags(GeneralRegion region, ConfigurationSection flags) {
 		boolean result = true;
 
