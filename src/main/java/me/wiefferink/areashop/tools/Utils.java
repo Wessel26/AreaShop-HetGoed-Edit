@@ -7,8 +7,7 @@ import me.wiefferink.areashop.interfaces.WorldEditSelection;
 import me.wiefferink.areashop.regions.BuyRegion;
 import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.regions.RentRegion;
-import me.wiefferink.interactivemessenger.Log;
-import me.wiefferink.interactivemessenger.processing.Message;
+import me.wiefferink.areashop.messages.Message;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -99,7 +98,7 @@ public class Utils {
 				try {
 					suffixes.put(Double.parseDouble(key), suffixesSection.getString(key));
 				} catch(NumberFormatException e) {
-					Log.warn("Key '" + key + "' in the metricSymbols section of config.yml is not a number!");
+					AreaShop.warn("Key '" + key + "' in the metricSymbols section of config.yml is not a number!");
 				}
 			}
 		}

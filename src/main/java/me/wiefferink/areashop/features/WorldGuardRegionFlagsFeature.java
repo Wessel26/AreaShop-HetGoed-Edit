@@ -9,7 +9,7 @@ import me.wiefferink.areashop.AreaShop;
 import me.wiefferink.areashop.events.notify.UpdateRegionEvent;
 import me.wiefferink.areashop.interfaces.RegionAccessSet;
 import me.wiefferink.areashop.regions.GeneralRegion;
-import me.wiefferink.interactivemessenger.processing.Message;
+import me.wiefferink.areashop.messages.Message;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 

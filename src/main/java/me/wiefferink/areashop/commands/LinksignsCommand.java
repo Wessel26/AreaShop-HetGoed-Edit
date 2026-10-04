@@ -1,6 +1,6 @@
 package me.wiefferink.areashop.commands;
 
-import me.wiefferink.interactivemessenger.processing.Message;
+import me.wiefferink.areashop.messages.Message;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -46,14 +46,14 @@ public class LinksignsCommand extends CommandAreaShop {
 				if(signProfilesSection != null) {
 					Set<String> profiles = signProfilesSection.getKeys(false);
 					if(!profiles.contains(profile)) {
-						ArrayList<String> message = new ArrayList<>();
+						Message message = Message.empty();
 						for(String p : profiles) {
 							if(!message.isEmpty()) {
-								message.add(", ");
+								message.append(", ");
 							}
-							message.addAll(Message.fromKey("addsign-profile").replacements(p).get());
+							message.append(Message.fromKey("addsign-profile").replacements(p));
 						}
-						plugin.message(sender, "addsign-wrongProfile", Message.fromList(message));
+						plugin.message(sender, "addsign-wrongProfile", message);
 						return;
 					}
 				}

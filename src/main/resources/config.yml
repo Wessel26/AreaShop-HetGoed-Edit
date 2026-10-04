@@ -7,12 +7,8 @@
 # │ GENERAL: Options that influence the global state of the plugin                                                             │
 # └────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 # Chat prefix used for all messages in the chat, also changes the greeting messages.
-chatPrefix:
-  - '[darkgreen][AreaShop][reset]'
-  - '  hover: AreaShop region management plugin'
-  - '  hover: %lang:action|Click to check the available commands|%'
-  - '  command: /areashop help'
-  - ' '
+# Uses MiniMessage formatting (https://docs.advntr.dev/minimessage/format.html), the old [gold]/hover: formatting is still converted automatically.
+chatPrefix: '<dark_green><click:run_command:''/areashop help''><hover:show_text:''AreaShop region management plugin<newline>%lang:action|Click to check the available commands|%''>[AreaShop]</hover></click><reset> '
 # The language file that should be used, check the 'lang' folder for build-in languages (use the filename without .yml here).
 # More information can be found here: https://github.com/NLthijs48/AreaShop/wiki/Language-support.
 language: EN

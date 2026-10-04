@@ -6,7 +6,7 @@ import me.wiefferink.areashop.handlers.SignHandler;
 import me.wiefferink.areashop.regions.GeneralRegion;
 import me.wiefferink.areashop.tools.Materials;
 import me.wiefferink.areashop.tools.Utils;
-import me.wiefferink.interactivemessenger.processing.Message;
+import me.wiefferink.areashop.messages.Message;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -232,7 +232,7 @@ public class RegionSign {
 		// Run player commands if specified
 		List<String> playerCommands = new ArrayList<>();
 		for(String command : stateConfig.getStringList(clickType.getValue() + "Player")) {
-			// TODO move variable checking code to InteractiveMessenger?
+			// TODO move variable checking code to Message?
 			playerCommands.add(command.replace(Message.VARIABLE_START + AreaShop.tagClicker + Message.VARIABLE_END, clicker.getName()));
 		}
 		getRegion().runCommands(clicker, playerCommands);

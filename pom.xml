@@ -38,13 +38,6 @@
       <scope>provided</scope>
     </dependency>
 
-    <!-- InteractiveMessenger library -->
-    <dependency>
-      <groupId>com.github.NLthijs48</groupId>
-      <artifactId>InteractiveMessenger</artifactId>
-      <version>1.1</version>
-    </dependency>
-
     <!-- BukkitDo library -->
     <dependency>
       <groupId>com.github.NLthijs48</groupId>
@@ -219,11 +212,6 @@
             </goals>
             <configuration>
               <relocations>
-                <!-- Relocate messaging framework -->
-                <relocation>
-                  <pattern>me.wiefferink.interactivemessenger</pattern>
-                  <shadedPattern>me.wiefferink.areashop.shaded.interactivemessenger</shadedPattern>
-                </relocation>
                 <!-- Relocate BukkitDo -->
                 <relocation>
                   <pattern>me.wiefferink.bukkitdo</pattern>

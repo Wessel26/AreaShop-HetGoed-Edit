@@ -13,8 +13,8 @@ import me.wiefferink.areashop.managers.Manager;
 import me.wiefferink.areashop.managers.SignLinkerManager;
 import me.wiefferink.areashop.tools.Utils;
 import me.wiefferink.bukkitdo.Do;
-import me.wiefferink.interactivemessenger.processing.Message;
-import me.wiefferink.interactivemessenger.source.LanguageManager;
+import me.wiefferink.areashop.messages.Message;
+import me.wiefferink.areashop.messages.LanguageManager;
 import net.milkbowl.vault.economy.Economy;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
@@ -245,6 +245,8 @@ public final class AreaShop extends JavaPlugin {
 				"EN",
 				chatprefix
 		);
+		Message.useFancyMessages(getConfig().getBoolean("useFancyMessages"));
+		Message.useColorsInConsole(getConfig().getBoolean("useColorsInConsole"));
 	}
 
 	/**

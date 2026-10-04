@@ -1,6 +1,15 @@
 ## AreaShop NEXT
 [**Planned features**](https://github.com/NLthijs48/AreaShop/milestone/5) 
 
+**Changed:**
+* Replaced the InteractiveMessenger library by MiniMessage, this fixes messages with hover/click failing with a `tellraw` error on Minecraft 1.21.5+
+* All language files now use MiniMessage (`<gold>`, `<bold>`, `<hover:...>`, `<click:...>`). Variables like `%0%`, `%region%` and `%lang:key|argument|%` work as before
+* Custom language files, the `chatPrefix` option and `/as message` text that still use the old formatting (`[gold]`, `hover:`/`command:` lines, `&6`) are converted automatically
+* The `useFancyMessages` and `useColorsInConsole` options are now actually applied
+
+**Fixed:**
+* Fixed broken translations: the Norwegian `command:` lines, and the NL/FR `import-imported` messages
+
 ## AreaShop 2.6.0
 **Features:**
 * Add 1.13 FastAsyncWorldEdit support (note: FastAsyncWorldEdit does seem to work correctly for 1.13.0, but not yet on 1.13.2)
