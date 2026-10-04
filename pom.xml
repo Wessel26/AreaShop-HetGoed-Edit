@@ -74,6 +74,9 @@
     <maven.compiler.source>25</maven.compiler.source>
     <maven.compiler.target>25</maven.compiler.target>
     <build.number>#RTGAME</build.number>
+    <!-- SonarQube, the server url and login token are set by the Jenkins SonarQube plugin or with -Dsonar.host.url and -Dsonar.token -->
+    <sonar.projectKey>me.wiefferink:areashop</sonar.projectKey>
+    <sonar.projectName>AreaShop</sonar.projectName>
   </properties>
 
   <pluginRepositories>
@@ -200,6 +203,12 @@
       </resource>
     </resources>
     <plugins>
+      <!-- Static analysis: mvn verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar (or mvn sonar:sonar) -->
+      <plugin>
+        <groupId>org.sonarsource.scanner.maven</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>5.8.0.7211</version>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
